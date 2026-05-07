@@ -1,6 +1,6 @@
 # Samples
 
-Five reference animations covering the core Manim surface area: 2D geometry, 3D, math typesetting, plotting, text transforms.
+Six reference animations covering the core Manim surface area: 2D geometry, 3D, math typesetting, plotting, text transforms, and updater-driven animation.
 
 Each sample is **hand-coded** as a reference — pair it with its `storyboard.yaml` to see the planner→implementer translation at work.
 
@@ -13,6 +13,7 @@ Each sample is **hand-coded** as a reference — pair it with its `storyboard.ya
 | 03 | [fourier-math](03-fourier-math/) | MathTex, ReplacementTransform | **yes** | 12s |
 | 04 | [quadratic-plot](04-quadratic-plot/) | Axes, plot lambda, add_coordinates | no | 8s |
 | 05 | [text-morph](05-text-morph/) | Text, ReplacementTransform, FadeOut | no | 6s |
+| 06 | [sine-wave-tracker](06-sine-wave-tracker/) | NumberPlane, ValueTracker, always_redraw | no | 7s |
 
 ## Build all samples
 
@@ -26,7 +27,7 @@ pwsh samples/build-samples.ps1
 bash samples/build-samples.sh
 ```
 
-The script renders each `scene.py` at `-qm` (1280×720, 30fps) into `<sample-dir>/out.mp4` and extracts the last frame as `<sample-dir>/thumb.png`. Sample 03 is skipped automatically if `xelatex` is not on PATH.
+The script renders each `scene.py` at `-qm` (1280×720, 30fps) into `<sample-dir>/out.mp4` and grabs a frame near the end of the clip (≈80 % of duration, via `ffmpeg -ss`) as `<sample-dir>/thumb.png` — sampling from the mp4 instead of `--save_last_frame` so fade-out scenes still produce a visible thumb. Sample 03 is skipped automatically if `xelatex` is not on PATH; a pre-rendered placeholder thumb ships with the repo so the README grid stays complete.
 
 ## What each sample is for
 

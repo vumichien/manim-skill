@@ -1,0 +1,49 @@
+meta:
+  title: "Sine wave tracker"
+  topic: "ValueTracker drives a dot riding y = sin(x) as the curve is drawn"
+  source: { kind: math, ref: null }
+  quality: medium
+  voice: null
+  total_duration_s: 7
+  created_at: "2026-05-07T00:00:00Z"
+  manim_version: "0.20.1"
+
+scenes:
+  - id: scene_01
+    title: "Plane and label"
+    beat: "A NumberPlane spanning roughly [-π, π] appears with a y = sin(x) label."
+    duration_s: 2.5
+    scene_class: Scene
+    mobjects:
+      - type: NumberPlane
+        name: plane
+        kwargs: { x_length: 10, y_length: 4 }
+      - type: Text
+        name: label
+        content: "y = sin(x)"
+        kwargs: { font_size: 36, color: "#F5E6C8" }
+    animations:
+      - { target: plane, anim: Create, duration: 1.5 }
+      - { target: label, anim: Write, duration: 1 }
+    voiceover_text: null
+    notes: "Plane uses light grid (stroke_opacity 0.3). Label is plain Text — keeps sample LaTeX-free."
+
+  - id: scene_02
+    title: "Dot rides the sine curve"
+    beat: "A ValueTracker sweeps from -π to π; a partial sine curve and a dot redraw on every frame."
+    duration_s: 4.5
+    scene_class: Scene
+    mobjects:
+      - type: ValueTracker
+        name: tracker
+        kwargs: { value: -3.14159 }
+      - type: ParametricFunction
+        name: curve
+        kwargs: { color: "#4ADEDC", stroke_width: 4 }
+      - type: Dot
+        name: dot
+        kwargs: { color: "#8B5CF6", radius: 0.12 }
+    animations:
+      - { target: tracker, anim: ApplyMethod, duration: 4, kwargs: { method: set_value, value: 3.14159, rate_func: linear } }
+    voiceover_text: null
+    notes: "The implementer wraps `curve` and `dot` in `always_redraw(lambda: ...)` so they recompute each frame from `tracker.get_value()`. The animation is emitted as `tracker.animate.set_value(PI)` — `ApplyMethod` is the schema-side label for that pattern."

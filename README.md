@@ -56,12 +56,12 @@ pwsh samples/build-samples.ps1   # or: bash samples/build-samples.sh
 
 ## Samples
 
-Five reference animations cover the core Manim surface area. Each ships with its `storyboard.yaml`, hand-coded `scene.py`, and (after `build-samples`) a thumbnail + mp4.
+Six reference animations cover the core Manim surface area. Each ships with its `storyboard.yaml`, hand-coded `scene.py`, and (after `build-samples`) a thumbnail + mp4.
 
 | | | |
 |---|---|---|
 | <a href="samples/01-pythagoras-2d/"><img src="samples/01-pythagoras-2d/thumb.png" width="320" /><br/><strong>Pythagoras 2D</strong></a><br/><sub>Polygon · Square · LaggedStart</sub> | <a href="samples/02-rotating-cube-3d/"><img src="samples/02-rotating-cube-3d/thumb.png" width="320" /><br/><strong>Rotating cube</strong></a><br/><sub>ThreeDScene · Cube · Rotate</sub> | <a href="samples/03-fourier-math/"><img src="samples/03-fourier-math/thumb.png" width="320" /><br/><strong>Fourier math</strong></a><br/><sub>MathTex · ReplacementTransform · LaTeX</sub> |
-| <a href="samples/04-quadratic-plot/"><img src="samples/04-quadratic-plot/thumb.png" width="320" /><br/><strong>Quadratic plot</strong></a><br/><sub>Axes · plot lambda</sub> | <a href="samples/05-text-morph/"><img src="samples/05-text-morph/thumb.png" width="320" /><br/><strong>Text morph</strong></a><br/><sub>Text · ReplacementTransform · FadeOut</sub> | |
+| <a href="samples/04-quadratic-plot/"><img src="samples/04-quadratic-plot/thumb.png" width="320" /><br/><strong>Quadratic plot</strong></a><br/><sub>Axes · plot lambda</sub> | <a href="samples/05-text-morph/"><img src="samples/05-text-morph/thumb.png" width="320" /><br/><strong>Text morph</strong></a><br/><sub>Text · ReplacementTransform · FadeOut</sub> | <a href="samples/06-sine-wave-tracker/"><img src="samples/06-sine-wave-tracker/thumb.png" width="320" /><br/><strong>Sine wave tracker</strong></a><br/><sub>NumberPlane · ValueTracker · always_redraw</sub> |
 
 See [`samples/README.md`](samples/README.md) for the full index.
 
@@ -115,7 +115,7 @@ manim-skill/
 ├── agents/                 manim-researcher.md, manim-planner.md, manim-implementer.md
 ├── assets/                 logo + hero GIF
 ├── commands/               /manim-video slash-command entrypoint
-├── samples/                5 reference animations (storyboard + scene.py + mp4 + thumb)
+├── samples/                6 reference animations (storyboard + scene.py + mp4 + thumb)
 ├── schemas/                storyboard.schema.json (canonical contract)
 ├── scripts/                install + ingest + validate + render runners
 ├── skills/manim-video/     SKILL.md + references/
