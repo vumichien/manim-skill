@@ -1,0 +1,56 @@
+[project]
+name = "manim-skill"
+version = "0.1.0"
+description = "Turn ideas, papers, and math into Manim animations via a 4-role agent pipeline (Claude Code plugin)."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Apache-2.0" }
+authors = [{ name = "vumichien" }]
+keywords = ["manim", "animation", "math", "video", "agent", "claude-code"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Multimedia :: Video",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+
+dependencies = [
+    "manim>=0.20,<0.21",
+    "manim-voiceover[gtts]>=0.3",
+    "arxiv>=2.1",
+    "pymupdf4llm>=0.0.17",
+    "trafilatura>=2.0",
+    "requests>=2.32",
+    "pyyaml>=6",
+    "jsonschema>=4",
+]
+
+[project.optional-dependencies]
+voice = ["manim-voiceover[gtts,openai,elevenlabs]>=0.3"]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[project.urls]
+Homepage = "https://github.com/vumichien/manim-skill"
+Repository = "https://github.com/vumichien/manim-skill"
+Issues = "https://github.com/vumichien/manim-skill/issues"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = "test_*.py"
+addopts = "-q"
+markers = [
+    "requires_manim: integration tests that import manim or run python -m manim",
+    "slow: tests that hit the network or render full samples",
+]

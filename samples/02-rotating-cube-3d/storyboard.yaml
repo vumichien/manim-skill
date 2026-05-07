@@ -1,0 +1,29 @@
+meta:
+  title: "Rotating cube — 3D"
+  topic: "Cube rotating in 3D space with axes"
+  source: { kind: idea, ref: null }
+  quality: medium
+  voice: null
+  total_duration_s: 8
+  created_at: "2026-05-07T00:00:00Z"
+  manim_version: "0.20.1"
+
+scenes:
+  - id: scene_01
+    title: "Cube rotates around vertical axis"
+    beat: "ThreeDAxes appear, then a cube fades in and rotates 360 degrees around UP."
+    duration_s: 8
+    scene_class: ThreeDScene
+    mobjects:
+      - type: ThreeDAxes
+        name: axes
+        kwargs: { x_range: [-3, 3], y_range: [-3, 3], z_range: [-3, 3] }
+      - type: Cube
+        name: cube
+        kwargs: { side_length: 2, fill_opacity: 0.6, color: "#4ADEDC" }
+    animations:
+      - { target: axes, anim: Create, duration: 1.5 }
+      - { target: cube, anim: FadeIn, duration: 1 }
+      - { target: cube, anim: Rotate, duration: 5, kwargs: { angle: 6.2831853, run_time: 5 } }
+    voiceover_text: null
+    notes: "Camera oriented at phi=75deg, theta=30deg before construct. PI*2 ≈ 6.2831853."

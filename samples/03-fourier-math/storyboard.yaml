@@ -1,0 +1,42 @@
+meta:
+  title: "Fourier series — formula"
+  topic: "Display the general Fourier series and expand the first three terms"
+  source: { kind: math, ref: null }
+  quality: medium
+  voice: null
+  total_duration_s: 12
+  created_at: "2026-05-07T00:00:00Z"
+  manim_version: "0.20.1"
+
+scenes:
+  - id: scene_01
+    title: "General formula"
+    beat: "Display the general Fourier series with summation."
+    duration_s: 6
+    scene_class: Scene
+    mobjects:
+      - type: MathTex
+        name: general
+        content: "f(x) = a_0 + \\sum_{n=1}^{\\infty} \\left( a_n \\cos(nx) + b_n \\sin(nx) \\right)"
+        kwargs: { font_size: 56 }
+    animations:
+      - { target: general, anim: Write, duration: 3 }
+      - { target: general, anim: Indicate, duration: 1.5 }
+    voiceover_text: null
+    notes: "Requires LaTeX. If not present, fall back to Text."
+
+  - id: scene_02
+    title: "Expanded first three terms"
+    beat: "Transform the summation into the first three explicit terms."
+    duration_s: 6
+    scene_class: Scene
+    mobjects:
+      - type: MathTex
+        name: expanded
+        content: "f(x) = a_0 + a_1 \\cos(x) + b_1 \\sin(x) + a_2 \\cos(2x) + b_2 \\sin(2x) + \\cdots"
+        kwargs: { font_size: 40 }
+    animations:
+      - { target: expanded, anim: Write, duration: 4 }
+      - { target: expanded, anim: Indicate, duration: 1.5 }
+    voiceover_text: null
+    notes: "Both scenes share the same screen position — could be combined with Transform if needed."

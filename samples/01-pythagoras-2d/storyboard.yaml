@@ -1,0 +1,71 @@
+meta:
+  title: "Pythagoras 2D — visual proof"
+  topic: "a^2 + b^2 = c^2 via squares-on-sides construction"
+  source: { kind: math, ref: null }
+  quality: medium
+  voice: null
+  total_duration_s: 16
+  created_at: "2026-05-07T00:00:00Z"
+  manim_version: "0.20.1"
+
+scenes:
+  - id: scene_01
+    title: "Right triangle setup"
+    beat: "A right triangle appears with legs a, b and hypotenuse c labeled."
+    duration_s: 6
+    scene_class: Scene
+    mobjects:
+      - type: Polygon
+        name: triangle
+        kwargs: { color: "#4ADEDC", stroke_width: 4 }
+      - type: Text
+        name: label_a
+        content: "a"
+      - type: Text
+        name: label_b
+        content: "b"
+      - type: Text
+        name: label_c
+        content: "c"
+    animations:
+      - { target: triangle, anim: Create, duration: 2 }
+      - { target: "VGroup(label_a, label_b, label_c)", anim: Write, duration: 1.5 }
+    voiceover_text: null
+    notes: "Vertices at (0,0), (3,0), (0,4); labels offset 0.3 outside each side midpoint."
+
+  - id: scene_02
+    title: "Squares on each side"
+    beat: "Three squares grow outward from each side of the triangle."
+    duration_s: 6
+    scene_class: Scene
+    mobjects:
+      - type: Square
+        name: square_a
+        kwargs: { side_length: 3, color: "#8B5CF6" }
+      - type: Square
+        name: square_b
+        kwargs: { side_length: 4, color: "#F5E6C8" }
+      - type: Square
+        name: square_c
+        kwargs: { side_length: 5, color: "#4ADEDC" }
+    animations:
+      - { target: "VGroup(square_a, square_b, square_c)", anim: LaggedStart, duration: 3, kwargs: { lag_ratio: 0.3 } }
+    voiceover_text: null
+    notes: "Position squares so they sit flush against each triangle side. Use Polygon.get_vertices() to anchor."
+
+  - id: scene_03
+    title: "Equality"
+    beat: "Areas combine: a^2 + b^2 = c^2 written as plain text below."
+    duration_s: 4
+    scene_class: Scene
+    mobjects:
+      - type: Text
+        name: equation
+        content: "a^2 + b^2 = c^2"
+        position: DOWN
+        kwargs: { font_size: 48 }
+    animations:
+      - { target: equation, anim: Write, duration: 2 }
+      - { target: equation, anim: Indicate, duration: 1.5 }
+    voiceover_text: null
+    notes: "Text not MathTex — keeps sample LaTeX-free."

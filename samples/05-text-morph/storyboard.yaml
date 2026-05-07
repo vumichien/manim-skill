@@ -1,0 +1,31 @@
+meta:
+  title: "Text morph"
+  topic: "Word transforms into another word"
+  source: { kind: idea, ref: null }
+  quality: medium
+  voice: null
+  total_duration_s: 6
+  created_at: "2026-05-07T00:00:00Z"
+  manim_version: "0.20.1"
+
+scenes:
+  - id: scene_01
+    title: "Idea morphs into animation"
+    beat: "The word 'idea' appears, then morphs into 'animation', then fades out."
+    duration_s: 6
+    scene_class: Scene
+    mobjects:
+      - type: Text
+        name: word_idea
+        content: "idea"
+        kwargs: { font_size: 96, color: "#4ADEDC" }
+      - type: Text
+        name: word_animation
+        content: "animation"
+        kwargs: { font_size: 96, color: "#8B5CF6" }
+    animations:
+      - { target: word_idea, anim: Write, duration: 1.5 }
+      - { target: word_idea, anim: ReplacementTransform, duration: 2, kwargs: { run_time: 2 } }
+      - { target: word_animation, anim: FadeOut, duration: 1.5 }
+    voiceover_text: null
+    notes: "ReplacementTransform target is word_animation; the storyboard's animation entry is illustrative — the implementer composes the two-arg call (old, new) at emit time."

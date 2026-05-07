@@ -1,0 +1,12 @@
+{
+  "name": "manim-skill",
+  "version": "0.1.0",
+  "description": "Turn ideas, papers, and math into Manim animations via a 4-role agent pipeline.",
+  "author": {
+    "name": "vumichien"
+  },
+  "homepage": "https://github.com/vumichien/manim-skill",
+  "repository": "https://github.com/vumichien/manim-skill",
+  "license": "Apache-2.0",
+  "keywords": ["manim", "animation", "math", "video", "agent", "research", "education"]
+}

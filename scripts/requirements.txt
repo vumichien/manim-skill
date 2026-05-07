@@ -1,0 +1,15 @@
+# Single source of truth for runtime + dev deps used by install.ps1 and install.sh.
+# Keep in sync with pyproject.toml. Lower bounds chosen for broad compatibility.
+# Manim 0.20.x still imports `pkg_resources`. setuptools 81 removed it,
+# so pin <81 until upstream Manim drops the import.
+setuptools>=70,<81
+manim>=0.20,<0.21
+manim-voiceover[gtts,openai,elevenlabs]>=0.3
+arxiv>=2.1
+pymupdf4llm>=0.0.17
+trafilatura>=1.12
+requests>=2.32
+pyyaml>=6
+jsonschema>=4
+pytest>=8
+ruff>=0.6

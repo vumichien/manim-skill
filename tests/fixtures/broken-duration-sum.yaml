@@ -1,0 +1,29 @@
+meta:
+  title: "Broken — meta.total_duration_s differs from sum(scenes.duration_s) by >1s"
+  topic: "fixture"
+  source: { kind: idea, ref: null }
+  quality: medium
+  voice: null
+  total_duration_s: 30
+  created_at: "2026-05-07T00:00:00Z"
+scenes:
+  - id: scene_01
+    title: "Five seconds"
+    beat: "Scene one."
+    duration_s: 5
+    scene_class: Scene
+    mobjects:
+      - { type: Circle, name: c1 }
+    animations:
+      - { target: c1, anim: Create, duration: 2 }
+    voiceover_text: null
+  - id: scene_02
+    title: "Five seconds"
+    beat: "Scene two."
+    duration_s: 5
+    scene_class: Scene
+    mobjects:
+      - { type: Square, name: s1 }
+    animations:
+      - { target: s1, anim: Create, duration: 2 }
+    voiceover_text: null

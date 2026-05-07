@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/vumichien/manim-skill/blob/main/schemas/storyboard.schema.json",
+  "title": "manim-skill Storyboard",
+  "description": "Canonical contract between manim-planner and manim-implementer agents.",
+  "type": "object",
+  "required": ["meta", "scenes"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": { "$ref": "#/$defs/meta" },
+    "scenes": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 30,
+      "items": { "$ref": "#/$defs/scene" }
+    }
+  },
+  "$defs": {
+    "meta": {
+      "type": "object",
+      "required": ["title", "topic", "quality", "total_duration_s"],
+      "additionalProperties": false,
+      "properties": {
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "topic": { "type": "string", "minLength": 1, "maxLength": 500 },
+        "source": {
+          "description": "Origin of the topic: idea | math | paper. For paper, include url/path.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": { "enum": ["idea", "math", "paper"] },
+            "ref": { "type": ["string", "null"] }
+          },
+          "required": ["kind"]
+        },
+        "quality": { "enum": ["low", "medium", "high", "4k"] },
+        "voice": { "enum": ["gtts", "openai", "elevenlabs", null] },
+        "total_duration_s": { "type": "number", "minimum": 5, "maximum": 1800 },
+        "created_at": { "type": "string", "format": "date-time" },
+        "manim_version": { "type": "string" }
+      }
+    },
+    "scene": {
+      "type": "object",
+      "required": ["id", "title", "beat", "duration_s", "mobjects", "animations"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^scene_\\d{2}$" },
+        "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+        "beat": { "type": "string", "minLength": 1 },
+        "duration_s": { "type": "number", "minimum": 1, "maximum": 90 },
+        "scene_class": {
+          "description": "Manim Scene subclass to inherit from.",
+          "enum": ["Scene", "MovingCameraScene", "ThreeDScene", "ZoomedScene", "VoiceoverScene"],
+          "default": "Scene"
+        },
+        "mobjects": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/mobject" },
+          "maxItems": 50
+        },
+        "animations": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/animation" },
+          "minItems": 1,
+          "maxItems": 60
+        },
+        "voiceover_text": { "type": ["string", "null"], "maxLength": 2000 },
+        "notes": { "type": "string", "maxLength": 1000 }
+      }
+    },
+    "mobject": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "description": "Whitelisted Manim Mobject class. Falls back to PascalCase pattern for less common classes.",
+          "anyOf": [
+            {
+              "enum": [
+                "Text", "MathTex", "Tex", "MarkupText",
+                "Square", "Circle", "Rectangle", "Polygon", "Triangle", "RegularPolygon",
+                "Line", "Arrow", "Vector", "DoubleArrow", "Arc", "Ellipse", "Dot",
+                "Axes", "NumberPlane", "PolarPlane", "ParametricFunction", "FunctionGraph",
+                "Surface", "ThreeDAxes", "Sphere", "Cube", "Cone", "Cylinder", "Torus",
+                "VGroup", "Group", "BraceLabel", "Brace",
+                "ImageMobject", "SVGMobject"
+              ]
+            },
+            { "type": "string", "pattern": "^[A-Z][A-Za-z0-9]+$" }
+          ]
+        },
+        "name": {
+          "description": "Optional id used by animations to target this mobject.",
+          "type": "string", "pattern": "^[a-z][a-z0-9_]*$"
+        },
+        "content": {
+          "description": "Text content for Text/MathTex/Tex/MarkupText.",
+          "type": "string"
+        },
+        "position": {
+          "description": "Anchor: keyword (UP/DOWN/LEFT/RIGHT/UL/UR/DL/DR/ORIGIN) or [x, y] / [x, y, z].",
+          "anyOf": [
+            { "enum": ["UP", "DOWN", "LEFT", "RIGHT", "UL", "UR", "DL", "DR", "ORIGIN"] },
+            { "type": "array", "items": { "type": "number" }, "minItems": 2, "maxItems": 3 }
+          ]
+        },
+        "kwargs": {
+          "description": "Constructor kwargs forwarded verbatim. Implementer validates against actual Manim signature.",
+          "type": "object"
+        }
+      }
+    },
+    "animation": {
+      "type": "object",
+      "required": ["target", "anim", "duration"],
+      "additionalProperties": false,
+      "properties": {
+        "target": {
+          "description": "Mobject reference: name (e.g. 'square_a') OR index ('mobjects[0]') OR group expr ('VGroup(square_a, label_b)').",
+          "type": "string", "minLength": 1
+        },
+        "anim": {
+          "enum": [
+            "Create", "Write", "DrawBorderThenFill", "ShowIncreasingSubsets",
+            "FadeIn", "FadeOut", "GrowFromCenter", "GrowFromEdge",
+            "Transform", "ReplacementTransform", "TransformMatchingTex", "TransformMatchingShapes",
+            "MoveAlongPath", "Rotate", "Indicate", "Wiggle", "Flash", "Circumscribe",
+            "LaggedStart", "Succession", "AnimationGroup",
+            "ApplyMethod", "ApplyFunction"
+          ]
+        },
+        "duration": { "type": "number", "minimum": 0.1, "maximum": 30 },
+        "kwargs": { "type": "object" }
+      }
+    }
+  }
+}

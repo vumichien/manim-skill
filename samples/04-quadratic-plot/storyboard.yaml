@@ -1,0 +1,34 @@
+meta:
+  title: "Quadratic plot"
+  topic: "Plot y = x^2 on labeled axes"
+  source: { kind: idea, ref: null }
+  quality: medium
+  voice: null
+  total_duration_s: 8
+  created_at: "2026-05-07T00:00:00Z"
+  manim_version: "0.20.1"
+
+scenes:
+  - id: scene_01
+    title: "Axes and parabola"
+    beat: "Axes appear, then y = x^2 is drawn from left to right with a label."
+    duration_s: 8
+    scene_class: Scene
+    mobjects:
+      - type: Axes
+        name: axes
+        kwargs: { x_range: [-3, 3, 1], y_range: [0, 9, 1], x_length: 6, y_length: 4 }
+      - type: ParametricFunction
+        name: parabola
+        kwargs: { color: "#8B5CF6" }
+      - type: Text
+        name: label
+        content: "y = x^2"
+        position: UR
+        kwargs: { font_size: 36 }
+    animations:
+      - { target: axes, anim: Create, duration: 1.5 }
+      - { target: parabola, anim: Create, duration: 4 }
+      - { target: label, anim: Write, duration: 1.5 }
+    voiceover_text: null
+    notes: "ParametricFunction is built via axes.plot(lambda x: x**2, x_range=[-3, 3]) at scene-emit time."

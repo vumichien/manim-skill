@@ -1,0 +1,81 @@
+# Canonical reference storyboard for the Pythagoras-visual-proof sample.
+# This file is the contract between manim-planner and manim-implementer.
+# Validates against schemas/storyboard.schema.json (Draft 2020-12).
+meta:
+  title: "Pythagoras' Theorem — Visual Proof"
+  topic: "Pythagorean theorem visual rearrangement proof"
+  source:
+    kind: math
+    ref: null
+  quality: high
+  voice: null
+  total_duration_s: 24
+  created_at: "2026-05-07T00:00:00Z"
+  manim_version: "0.20.1"
+
+scenes:
+  - id: scene_01
+    title: "Set up the right triangle"
+    beat: "Draw a right triangle with legs a, b and hypotenuse c. Label each side."
+    duration_s: 8
+    scene_class: Scene
+    mobjects:
+      - type: Polygon
+        name: triangle
+        kwargs: { color: "#4ADEDC", stroke_width: 4 }
+      - type: Text
+        name: label_a
+        content: "a"
+        position: DOWN
+      - type: Text
+        name: label_b
+        content: "b"
+        position: LEFT
+      - type: Text
+        name: label_c
+        content: "c"
+        position: UR
+    animations:
+      - { target: triangle, anim: Create, duration: 2 }
+      - { target: "VGroup(label_a, label_b, label_c)", anim: Write, duration: 1.5 }
+    voiceover_text: null
+    notes: "Triangle vertices computed at runtime: (0,0), (3,0), (0,4). Labels offset 0.3 outward."
+
+  - id: scene_02
+    title: "Rearrange into the equality"
+    beat: "Duplicate triangle 3x; arrange 4 copies into a square of side a+b. Show area = c² in the middle."
+    duration_s: 10
+    scene_class: Scene
+    mobjects:
+      - type: VGroup
+        name: four_triangles
+        kwargs: { }
+      - type: Square
+        name: inner_square
+        kwargs: { side_length: 2.5, color: "#8B5CF6" }
+      - type: MathTex
+        name: c_squared
+        content: "c^2"
+        position: ORIGIN
+    animations:
+      - { target: four_triangles, anim: LaggedStart, duration: 3, kwargs: { lag_ratio: 0.4 } }
+      - { target: inner_square, anim: DrawBorderThenFill, duration: 2 }
+      - { target: c_squared, anim: Write, duration: 2 }
+    voiceover_text: null
+    notes: "MathTex requires LaTeX; if absent, fall back to Text('c^2'). Implementer decides."
+
+  - id: scene_03
+    title: "Conclude a² + b² = c²"
+    beat: "Slide two triangles so the inner shapes form two squares of areas a² and b². Show the equation."
+    duration_s: 6
+    scene_class: Scene
+    mobjects:
+      - type: MathTex
+        name: equation
+        content: "a^2 + b^2 = c^2"
+        position: UP
+    animations:
+      - { target: equation, anim: Write, duration: 2.5 }
+      - { target: equation, anim: Indicate, duration: 1.5 }
+    voiceover_text: null
+    notes: "Final hold of 1s for poster frame."

@@ -1,0 +1,51 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Add uv to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: System libs for cairo/pango (manim native deps)
+        run: sudo apt-get update -y && sudo apt-get install -y libcairo2-dev libpango1.0-dev pkg-config
+
+      - name: Bootstrap venv + install deps
+        run: bash scripts/install.sh --skip-latex
+        env:
+          VENV_PATH: .venv
+
+      - name: Lint
+        run: .venv/bin/ruff check .
+
+      - name: Tests (excluding live-manim)
+        run: .venv/bin/pytest tests/ -v --tb=short -m "not requires_manim and not slow"
+
+      - name: Smoke render (one tiny scene at -ql)
+        run: |
+          .venv/bin/python -m manim render -ql --media_dir /tmp/smoke \
+            tests/fixtures/hello_scene.py HelloScene --dry_run
+
+      - name: Plugin manifest sanity
+        run: |
+          .venv/bin/python -m json.tool .claude-plugin/marketplace.json > /dev/null
+          .venv/bin/python -m json.tool .claude-plugin/plugin.json > /dev/null

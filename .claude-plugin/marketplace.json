@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "manim-video-marketplace",
+  "description": "Manim-CE animation plugin for Claude Code: turn ideas, papers, and math topics into rendered videos.",
+  "version": "0.1.0",
+  "owner": {
+    "name": "vumichien"
+  },
+  "plugins": [
+    {
+      "name": "manim-skill",
+      "source": ".",
+      "description": "Multi-agent pipeline for Manim Community Edition video generation. Transforms ideas, research papers, and math topics into animated videos via /manim-video.",
+      "category": "development",
+      "tags": ["manim", "animation", "video", "math", "education", "research"],
+      "homepage": "https://github.com/vumichien/manim-skill"
+    }
+  ]
+}
