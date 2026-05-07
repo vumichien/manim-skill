@@ -10,8 +10,8 @@
     {
       "name": "manim-skill",
       "source": {
-        "source": "github",
-        "repo": "vumichien/manim-skill"
+        "source": "git",
+        "url": "https://github.com/vumichien/manim-skill.git"
       },
       "description": "Multi-agent pipeline for Manim Community Edition video generation. Transforms ideas, research papers, and math topics into animated videos via /manim-video.",
       "category": "development",
