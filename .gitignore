@@ -44,6 +44,13 @@ dist/
 # (.claude-plugin/ at the repo root IS the plugin; .claude/ is the development env.)
 .claude/
 
+# IDE tooling
+.cursor/
+
+# Internal docs + planning history — kept locally, excluded from publication.
+docs/
+plans/
+
 # Per-sample manim scratch
 samples/*/.manim_media/
 

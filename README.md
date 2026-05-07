@@ -115,7 +115,6 @@ manim-skill/
 ├── agents/                 manim-researcher.md, manim-planner.md, manim-implementer.md
 ├── assets/                 logo + hero GIF
 ├── commands/               /manim-video slash-command entrypoint
-├── docs/                   tech-stack, design-guidelines, contributing
 ├── samples/                5 reference animations (storyboard + scene.py + mp4 + thumb)
 ├── schemas/                storyboard.schema.json (canonical contract)
 ├── scripts/                install + ingest + validate + render runners
@@ -128,7 +127,12 @@ manim-skill/
 
 ## Contributing
 
-See [`docs/contributing.md`](docs/contributing.md) for the dev environment setup, test conventions, and how to add a sample.
+PRs welcome. Quick conventions:
+
+- Python ≥3.11. Run `ruff check .` + `pytest` before pushing (CI enforces both).
+- Kebab-case for executable scripts (`scripts/render.py`), snake_case for importable modules (`scripts/ingest_shared.py`).
+- New samples go under `samples/NN-<slug>/`: write `storyboard.yaml` first (validate with `python scripts/validate-storyboard.py`), then a hand-coded `scene.py`, then add the entry to `samples/build-samples.{ps1,sh}`.
+- [Conventional Commits](https://www.conventionalcommits.org/). No AI references in commit messages.
 
 ## License
 
