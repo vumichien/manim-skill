@@ -1,19 +1,28 @@
 meta:
+  schema_version: "0.2.0"
   title: "Quadratic plot"
-  topic: "Plot y = x^2 on labeled axes"
+  topic: "Plot y = x squared on labeled axes"
   source: { kind: idea, ref: null }
   quality: medium
   voice: null
-  total_duration_s: 8
+  total_duration_s: 9
+  transition_s: 0.7
+  palette:
+    primary: "#4ADEDC"
+    accent:  "#8B5CF6"
+    warn:    "#F5E6C8"
+    bg:      "#0F1B2D"
+  show_progress: true
   created_at: "2026-05-07T00:00:00Z"
   manim_version: "0.20.1"
 
 scenes:
   - id: scene_01
     title: "Axes and parabola"
-    beat: "Axes appear, then y = x^2 is drawn from left to right with a label."
-    duration_s: 8
+    beat: "Axes appear, then y = x squared is drawn from left to right with a label."
+    duration_s: 9
     scene_class: Scene
+    show_title_card: true
     mobjects:
       - type: Axes
         name: axes
@@ -30,5 +39,5 @@ scenes:
       - { target: axes, anim: Create, duration: 1.5 }
       - { target: parabola, anim: Create, duration: 4 }
       - { target: label, anim: Write, duration: 1.5 }
-    voiceover_text: null
-    notes: "ParametricFunction is built via axes.plot(lambda x: x**2, x_range=[-3, 3]) at scene-emit time."
+    voiceover_text: "Plot the parabola y equals x squared. Axes appear first, then the curve sweeps from left to right."
+    notes: "ParametricFunction is built via axes.plot(lambda x: x**2, x_range=[-3, 3]) at scene-emit time. Body shifted DOWN 0.5 to keep within y in [-3, 3] under header."

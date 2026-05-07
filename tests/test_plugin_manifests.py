@@ -20,7 +20,7 @@ def test_marketplace_json_parseable() -> None:
     assert mkt["plugins"], "plugins array must not be empty"
     plugin = mkt["plugins"][0]
     assert plugin["name"] == "manim-skill"
-    assert plugin["source"] == "."
+    assert plugin["source"] in (".", "./")
 
 
 def test_marketplace_name_not_reserved() -> None:

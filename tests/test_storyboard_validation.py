@@ -1,4 +1,4 @@
-"""Storyboard validator: positive case, three negative fixtures."""
+"""Storyboard validator: positive case + negative fixtures (schema 0.2.0)."""
 from __future__ import annotations
 
 import subprocess
@@ -28,9 +28,11 @@ def test_example_storyboard_passes() -> None:
 @pytest.mark.parametrize(
     "fixture,expected_substring",
     [
-        ("broken-no-duration.yaml",   "duration_s"),
-        ("broken-bad-target.yaml",    "ghost_circle"),
-        ("broken-duration-sum.yaml",  "total_duration_s"),
+        ("broken-no-duration.yaml",        "duration_s"),
+        ("broken-bad-target.yaml",         "ghost_circle"),
+        ("broken-duration-sum.yaml",       "total_duration_s"),
+        ("broken-old-schema-version.yaml", "0.2.0"),
+        ("broken-empty-voiceover.yaml",    "voiceover_text"),
     ],
 )
 def test_broken_fixture_fails(fixture: str, expected_substring: str) -> None:

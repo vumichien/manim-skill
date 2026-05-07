@@ -100,6 +100,61 @@ class MyVoiced(VoiceoverScene):
 
 Provider swap: `GTTSService` → `OpenAIService(voice="fable")` or `ElevenLabsService(voice_name="Adam")`. Env vars in `voiceover-setup.md`.
 
+## Chrome helpers (schema 0.2.0)
+
+The implementer emits `out/<run-id>/scenes/_shared.py` from the template at
+`skills/manim-video/references/shared-chrome-template.py`, then each per-scene file
+imports four helpers:
+
+```python
+from _shared import PALETTE, add_header, add_title_card, chunk_captions, play_with_captions
+```
+
+| Helper | Purpose |
+|---|---|
+| `PALETTE` | dict of hex codes — `primary`, `accent`, `warn`, `bg` |
+| `add_header(scene, idx, total, title)` | top progress bar + title + counter; instant `add` |
+| `add_title_card(scene, title, duration_s=1.5)` | full-frame opener; FadeIn → hold → FadeOut |
+| `chunk_captions(text, total_s, words_per_chunk=10)` | split narration into time-sliced caption tuples |
+| `play_with_captions(scene, body, voiceover_text, total_s, voice_enabled)` | wrap body anims with caption track + optional voice |
+
+Layout invariants the planner enforces so chrome does not collide with body mobjects:
+- Header occupies y in `[3.1, 3.5]`. Body mobjects: `y ≤ 3.0`.
+- Captions anchor to bottom edge (`buff=0.5`). Body mobjects: `y ≥ -3.0`.
+
+Per-scene file pattern (voice path):
+
+```python
+"""Scene 01: Set up the right triangle"""
+from manim import *
+from manim_voiceover import VoiceoverScene
+from manim_voiceover.services.gtts import GTTSService
+from _shared import PALETTE, add_header, add_title_card, play_with_captions
+
+class Scene01(VoiceoverScene):
+    def construct(self):
+        self.set_speech_service(GTTSService(lang="en"))
+        add_header(self, idx=1, total=3, title="Set up the right triangle")
+        add_title_card(self, "Set up the right triangle", duration_s=1.5)
+
+        def body(scene, tracker):
+            tri = Polygon([0,0,0],[3,0,0],[0,4,0], color=PALETTE["primary"])
+            scene.play(Create(tri), run_time=2)
+            # ... rest of scene body
+
+        play_with_captions(
+            self,
+            body_callable=body,
+            voiceover_text="Start with a right triangle...",
+            total_s=8.0,
+            voice_enabled=True,
+        )
+        self.wait(0.3)
+```
+
+Voice-free variant: change base class to `Scene`, drop `set_speech_service`, pass
+`voice_enabled=False`. Captions still render via the updater track.
+
 ## Critical pitfalls
 
 1. **`self.add(circle)` vs `self.play(Create(circle))`** — `add` puts the object on screen instantly; `play(Create(...))` animates the appearance. Mixing them on the same object hides the animation.

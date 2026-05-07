@@ -12,14 +12,24 @@ When `--voice` is passed, the implementer wraps each scene in a `manim_voiceover
 
 `manim-voiceover` also supports `azure` and a local `Recorder`, but they are not exposed via `--voice` in v0.1 (they need extra setup). Users can author scenes that use them directly.
 
-## Default and fallback
+## Default and fallback (schema 0.2.0)
 
-- `--voice` (no value) → `gtts`
-- `--voice gtts` → `gtts`
-- `--voice openai` → `openai`. If `OPENAI_API_KEY` is missing, the skill falls back to `gtts` and prints a warning in `summary.md`.
+- **No flag passed** → `gtts` (the new default since 0.2.0; was `null` in 0.1.x).
+- **`--no-voice`** → no voice, captions still rendered via the chrome track.
+- `--voice gtts` → `gtts`.
+- `--voice openai` → `openai`. If `OPENAI_API_KEY` is missing, falls back to `gtts` and warns.
 - `--voice elevenlabs` → `elevenlabs`. Same fallback rule.
 
-The fallback policy is encoded in the implementer agent prompt (`agents/manim-implementer.md`).
+### Voice fallback inside the implementer
+
+If a voice provider fails at runtime (network error from gtts, missing API key, voiceover import failure):
+
+1. **First failure on any scene** — retry once after short backoff.
+2. **Second voice-related failure on any scene** — downgrade ALL remaining scenes to voice-free fallback (`Scene` base class, `voice_enabled=False` on `play_with_captions`). Captions still render.
+
+This "all-or-none after first fallback" policy avoids a video that mixes voiced and silent scenes. The implementer logs the policy choice in `error.md`.
+
+The fallback rules are encoded in `agents/manim-implementer.md`.
 
 ## Env-var setup
 

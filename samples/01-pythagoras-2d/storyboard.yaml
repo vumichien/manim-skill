@@ -1,10 +1,18 @@
 meta:
-  title: "Pythagoras 2D — visual proof"
+  schema_version: "0.2.0"
+  title: "Pythagoras 2D - visual proof"
   topic: "a^2 + b^2 = c^2 via squares-on-sides construction"
   source: { kind: math, ref: null }
   quality: medium
   voice: null
-  total_duration_s: 16
+  total_duration_s: 18
+  transition_s: 0.7
+  palette:
+    primary: "#4ADEDC"
+    accent:  "#8B5CF6"
+    warn:    "#F5E6C8"
+    bg:      "#0F1B2D"
+  show_progress: true
   created_at: "2026-05-07T00:00:00Z"
   manim_version: "0.20.1"
 
@@ -12,8 +20,9 @@ scenes:
   - id: scene_01
     title: "Right triangle setup"
     beat: "A right triangle appears with legs a, b and hypotenuse c labeled."
-    duration_s: 6
+    duration_s: 7
     scene_class: Scene
+    show_title_card: true
     mobjects:
       - type: Polygon
         name: triangle
@@ -30,14 +39,15 @@ scenes:
     animations:
       - { target: triangle, anim: Create, duration: 2 }
       - { target: "VGroup(label_a, label_b, label_c)", anim: Write, duration: 1.5 }
-    voiceover_text: null
-    notes: "Vertices at (0,0), (3,0), (0,4); labels offset 0.3 outside each side midpoint."
+    voiceover_text: "Start with a right triangle. The two legs are labeled a and b, and the hypotenuse is c."
+    notes: "Vertices at (0,0), (3,0), (0,4); labels offset 0.3 outside each side midpoint. Body y in [-3.0, 3.0]."
 
   - id: scene_02
     title: "Squares on each side"
     beat: "Three squares grow outward from each side of the triangle."
-    duration_s: 6
+    duration_s: 7
     scene_class: Scene
+    show_title_card: true
     mobjects:
       - type: Square
         name: square_a
@@ -50,14 +60,15 @@ scenes:
         kwargs: { side_length: 5, color: "#4ADEDC" }
     animations:
       - { target: "VGroup(square_a, square_b, square_c)", anim: LaggedStart, duration: 3, kwargs: { lag_ratio: 0.3 } }
-    voiceover_text: null
-    notes: "Position squares so they sit flush against each triangle side. Use Polygon.get_vertices() to anchor."
+    voiceover_text: "Build three squares, one on each side. Their sizes are a squared, b squared, and c squared."
+    notes: "Position squares flush against triangle sides. Use Polygon.get_vertices() to anchor."
 
   - id: scene_03
     title: "Equality"
     beat: "Areas combine: a^2 + b^2 = c^2 written as plain text below."
     duration_s: 4
     scene_class: Scene
+    show_title_card: false
     mobjects:
       - type: Text
         name: equation
@@ -67,5 +78,5 @@ scenes:
     animations:
       - { target: equation, anim: Write, duration: 2 }
       - { target: equation, anim: Indicate, duration: 1.5 }
-    voiceover_text: null
-    notes: "Text not MathTex — keeps sample LaTeX-free."
+    voiceover_text: "The two smaller square areas sum exactly to the area of the square on the hypotenuse."
+    notes: "Text not MathTex - keeps sample LaTeX-free."

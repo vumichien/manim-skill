@@ -1,10 +1,18 @@
 meta:
-  title: "Rotating cube — 3D"
+  schema_version: "0.2.0"
+  title: "Rotating cube - 3D"
   topic: "Cube rotating in 3D space with axes"
   source: { kind: idea, ref: null }
   quality: medium
   voice: null
-  total_duration_s: 8
+  total_duration_s: 9
+  transition_s: 0.7
+  palette:
+    primary: "#4ADEDC"
+    accent:  "#8B5CF6"
+    warn:    "#F5E6C8"
+    bg:      "#0F1B2D"
+  show_progress: true
   created_at: "2026-05-07T00:00:00Z"
   manim_version: "0.20.1"
 
@@ -12,8 +20,9 @@ scenes:
   - id: scene_01
     title: "Cube rotates around vertical axis"
     beat: "ThreeDAxes appear, then a cube fades in and rotates 360 degrees around UP."
-    duration_s: 8
+    duration_s: 9
     scene_class: ThreeDScene
+    show_title_card: false
     mobjects:
       - type: ThreeDAxes
         name: axes
@@ -25,5 +34,5 @@ scenes:
       - { target: axes, anim: Create, duration: 1.5 }
       - { target: cube, anim: FadeIn, duration: 1 }
       - { target: cube, anim: Rotate, duration: 5, kwargs: { angle: 6.2831853, run_time: 5 } }
-    voiceover_text: null
-    notes: "Camera oriented at phi=75deg, theta=30deg before construct. PI*2 ≈ 6.2831853."
+    voiceover_text: "A 3D coordinate system appears. A translucent cube fades in and rotates a full turn around the vertical axis."
+    notes: "Camera oriented at phi=75deg, theta=30deg before construct. PI*2 ~ 6.2831853. Title card disabled because ThreeDScene camera quirks would distort it. Header added via add_fixed_in_frame_mobjects."

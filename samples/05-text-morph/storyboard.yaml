@@ -1,10 +1,18 @@
 meta:
+  schema_version: "0.2.0"
   title: "Text morph"
   topic: "Word transforms into another word"
   source: { kind: idea, ref: null }
   quality: medium
   voice: null
   total_duration_s: 6
+  transition_s: 0.7
+  palette:
+    primary: "#4ADEDC"
+    accent:  "#8B5CF6"
+    warn:    "#F5E6C8"
+    bg:      "#0F1B2D"
+  show_progress: true
   created_at: "2026-05-07T00:00:00Z"
   manim_version: "0.20.1"
 
@@ -14,6 +22,7 @@ scenes:
     beat: "The word 'idea' appears, then morphs into 'animation', then fades out."
     duration_s: 6
     scene_class: Scene
+    show_title_card: false
     mobjects:
       - type: Text
         name: word_idea
@@ -27,5 +36,5 @@ scenes:
       - { target: word_idea, anim: Write, duration: 1.5 }
       - { target: word_idea, anim: ReplacementTransform, duration: 2, kwargs: { run_time: 2 } }
       - { target: word_animation, anim: FadeOut, duration: 1.5 }
-    voiceover_text: null
-    notes: "ReplacementTransform target is word_animation; the storyboard's animation entry is illustrative — the implementer composes the two-arg call (old, new) at emit time."
+    voiceover_text: "An idea is just a starting point. Watch as the word morphs into animation, the medium that brings it to life."
+    notes: "Voice-free variant per Phase 8 validation matrix. ReplacementTransform target is word_animation; the implementer composes the two-arg call (old, new) at emit time. show_title_card disabled because scene is short and demo is text-centric."

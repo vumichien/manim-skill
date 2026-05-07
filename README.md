@@ -16,7 +16,7 @@
 
 <p align="center">
   <img alt="License" src="https://img.shields.io/badge/license-Apache--2.0-blue" />
-  <img alt="Plugin version" src="https://img.shields.io/badge/plugin-0.1.0-green" />
+  <img alt="Plugin version" src="https://img.shields.io/badge/plugin-0.2.0-green" />
   <img alt="Manim" src="https://img.shields.io/badge/manim-%3E%3D0.20-8B5CF6" />
   <img alt="Python" src="https://img.shields.io/badge/python-3.11%2B-4ADEDC" />
 </p>
@@ -157,16 +157,24 @@ Outputs land at `samples\NN-*\out.mp4`. If sample 01 (Pythagoras) renders, your 
 
 ```text
 /manim-skill:manim-video --idea "Why is the sky blue?"
-/manim-skill:manim-video --paper 1706.03762 --voice gtts
-/manim-skill:manim-video --math "Fourier series" --quality high
+/manim-skill:manim-video --idea "Why is the sky blue?" --no-voice
+/manim-skill:manim-video --paper 1706.03762 --voice openai --quality high
+/manim-skill:manim-video --math "Fourier series" --transition-s 1.0
 ```
+
+Default behavior (since 0.2.0): gtts voiceover + chrome (header bar + title cards) + cross-fade transitions + auto-generated captions. Pass `--no-voice` for the silent + caption-only path; `--no-chrome` for bare scenes.
+
+See [`docs/storyboard-migration-0.2.0.md`](docs/storyboard-migration-0.2.0.md) for the 0.1.x → 0.2.0 migration guide.
 
 ---
 
 ## Flag reference
 
 ```
-/manim-skill:manim-video --idea "<topic>" | --paper <id-or-url> | --math "<topic>" [--voice gtts|openai|elevenlabs]
+/manim-skill:manim-video --idea "<topic>" | --paper <id-or-url> | --math "<topic>"
+                         [--voice gtts|openai|elevenlabs] [--no-voice]
+                         [--no-chrome] [--transition-s 0.7]
+                         [--quality low|medium|high|4k] [--storyboard-only] [--out <dir>]
 ```
 
 | Flag | Argument | Default | Notes |
@@ -174,7 +182,10 @@ Outputs land at `samples\NN-*\out.mp4`. If sample 01 (Pythagoras) renders, your 
 | `--idea` | `"<topic>"` | — | Pure topic input. |
 | `--paper` | `<arxiv-id\|url\|path>` | — | Auto-detects arXiv id, PDF (local/URL), or HTML. |
 | `--math` | `"<topic>"` | — | Math specialization. Uses `MathTex` if LaTeX is present. |
-| `--voice` | `gtts\|openai\|elevenlabs` | none | `gtts` is keyless. Paid providers need env vars. |
+| `--voice` | `gtts\|openai\|elevenlabs` | `gtts` | **Default flipped to gtts in 0.2.0.** Paid providers need env vars. |
+| `--no-voice` | (flag) | off | Opt out of TTS. Captions still render. Mutex with `--voice`. |
+| `--no-chrome` | (flag) | off | Disable header bar + title cards. Captions still render. |
+| `--transition-s` | `<float>` | `0.7` | Cross-fade duration between scenes; range 0.3–1.5. |
 | `--quality` | `low\|medium\|high\|4k` | `high` | `high` = 1080p60. |
 | `--storyboard-only` | (flag) | off | Stop after planning; skip render. |
 | `--out` | `<dir>` | `out/<run-id>/` | Override output directory. |

@@ -97,6 +97,18 @@ Manim writes to `<media_dir>/videos/<scene_stem>/<quality_dir>/<ClassName>.<ext>
 ## What this script intentionally does **not** do
 
 - It does not implement the retry loop (that is the implementer agent's job).
-- It does not concatenate scenes into a final video (use `ffmpeg` or post-process step).
+- It does not concatenate scenes into a final video — use `scripts/concat-xfade.py` (schema 0.2.0+).
 - It does not modify scene files; it is read-only on inputs.
 - It does not stream stdout to the caller; it captures everything and emits one JSON object at the end.
+
+## Implementer-side log fields (schema 0.2.0)
+
+When the implementer appends the render JSON to `<out_dir>/render.log`, it should also include:
+
+- `chrome_emitted`: bool — true if the scene file called `add_header` / `add_title_card`.
+- `voice_path`: `"gtts" | "openai" | "elevenlabs" | "fallback_caption_only" | "none"`.
+- `scene_duration_s`: float — the storyboard scene duration (used by `emit-captions-srt.py`).
+
+These fields are added to each render attempt's JSON line so downstream tooling
+(captions emission, summary report) can reason about chrome and voice without
+re-reading the storyboard.

@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/vumichien/manim-skill/blob/main/schemas/storyboard.schema.json",
+  "$id": "https://github.com/vumichien/manim-skill/blob/main/schemas/storyboard.schema.json#v0.2.0",
   "title": "manim-skill Storyboard",
-  "description": "Canonical contract between manim-planner and manim-implementer agents.",
+  "description": "Canonical contract between manim-planner and manim-implementer agents. Schema v0.2.0.",
   "type": "object",
   "required": ["meta", "scenes"],
   "additionalProperties": false,
@@ -18,9 +18,14 @@
   "$defs": {
     "meta": {
       "type": "object",
-      "required": ["title", "topic", "quality", "total_duration_s"],
+      "required": ["schema_version", "title", "topic", "quality", "total_duration_s"],
       "additionalProperties": false,
       "properties": {
+        "schema_version": {
+          "description": "Storyboard schema version. Required since 0.2.0. Validator rejects anything below 0.2.0.",
+          "type": "string",
+          "pattern": "^0\\.[2-9]\\.[0-9]+$"
+        },
         "title": { "type": "string", "minLength": 1, "maxLength": 200 },
         "topic": { "type": "string", "minLength": 1, "maxLength": 500 },
         "source": {
@@ -36,13 +41,35 @@
         "quality": { "enum": ["low", "medium", "high", "4k"] },
         "voice": { "enum": ["gtts", "openai", "elevenlabs", null] },
         "total_duration_s": { "type": "number", "minimum": 5, "maximum": 1800 },
+        "transition_s": {
+          "description": "Cross-fade duration between scenes during concat. Default 0.7s.",
+          "type": "number",
+          "minimum": 0.3,
+          "maximum": 1.5
+        },
+        "palette": {
+          "description": "Brand palette overriding chrome defaults. All four hex codes required if provided.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["primary", "accent", "warn", "bg"],
+          "properties": {
+            "primary": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "accent":  { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "warn":    { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+            "bg":      { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" }
+          }
+        },
+        "show_progress": {
+          "description": "Render persistent header/progress bar across all scenes. Default true.",
+          "type": "boolean"
+        },
         "created_at": { "type": "string", "format": "date-time" },
         "manim_version": { "type": "string" }
       }
     },
     "scene": {
       "type": "object",
-      "required": ["id", "title", "beat", "duration_s", "mobjects", "animations"],
+      "required": ["id", "title", "beat", "duration_s", "mobjects", "animations", "voiceover_text"],
       "additionalProperties": false,
       "properties": {
         "id": { "type": "string", "pattern": "^scene_\\d{2}$" },
@@ -53,6 +80,10 @@
           "description": "Manim Scene subclass to inherit from.",
           "enum": ["Scene", "MovingCameraScene", "ThreeDScene", "ZoomedScene", "VoiceoverScene"],
           "default": "Scene"
+        },
+        "show_title_card": {
+          "description": "Render an opening title card on this scene. Default true.",
+          "type": "boolean"
         },
         "mobjects": {
           "type": "array",
@@ -65,7 +96,26 @@
           "minItems": 1,
           "maxItems": 60
         },
-        "voiceover_text": { "type": ["string", "null"], "maxLength": 2000 },
+        "voiceover_text": {
+          "description": "Required since 0.2.0. Narration for this scene; also drives auto-chunked captions when captions[] is empty.",
+          "type": "string",
+          "minLength": 20,
+          "maxLength": 2000
+        },
+        "captions": {
+          "description": "Optional explicit caption schedule. When empty, implementer auto-chunks from voiceover_text.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["text", "start_s", "duration_s"],
+            "properties": {
+              "text":       { "type": "string", "minLength": 1, "maxLength": 200 },
+              "start_s":    { "type": "number", "minimum": 0 },
+              "duration_s": { "type": "number", "minimum": 0.3, "maximum": 30 }
+            }
+          }
+        },
         "notes": { "type": "string", "maxLength": 1000 }
       }
     },

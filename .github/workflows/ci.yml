@@ -45,6 +45,20 @@ jobs:
           .venv/bin/python -m manim render -ql --media_dir /tmp/smoke \
             tests/fixtures/hello_scene.py HelloScene --dry_run
 
+      - name: Smoke render sample 01 + concat-xfade
+        run: |
+          cd samples/01-pythagoras-2d
+          ../../.venv/bin/python -m manim render -ql --media_dir /tmp/sample01 scene.py Scene01
+          ../../.venv/bin/python -m manim render -ql --media_dir /tmp/sample01 scene.py Scene02
+          ../../.venv/bin/python -m manim render -ql --media_dir /tmp/sample01 scene.py Scene03
+          ../../.venv/bin/python ../../scripts/concat-xfade.py \
+            --inputs /tmp/sample01/videos/scene/480p15/Scene01.mp4 \
+                     /tmp/sample01/videos/scene/480p15/Scene02.mp4 \
+                     /tmp/sample01/videos/scene/480p15/Scene03.mp4 \
+            --durations 7.0 7.0 4.0 \
+            --transition-s 0.7 \
+            --out /tmp/sample01/video.mp4
+
       - name: Plugin manifest sanity
         run: |
           .venv/bin/python -m json.tool .claude-plugin/marketplace.json > /dev/null

@@ -1,0 +1,20 @@
+meta:
+  schema_version: "0.1.0"
+  title: "Broken - schema_version below 0.2.0"
+  topic: "fixture"
+  source: { kind: idea, ref: null }
+  quality: medium
+  voice: null
+  total_duration_s: 5
+  created_at: "2026-05-07T00:00:00Z"
+scenes:
+  - id: scene_01
+    title: "Old schema"
+    beat: "Validator should reject this with migration message."
+    duration_s: 5
+    scene_class: Scene
+    mobjects:
+      - { type: Circle, name: c1 }
+    animations:
+      - { target: c1, anim: Create, duration: 2 }
+    voiceover_text: "Old schema version should fail with migration link."

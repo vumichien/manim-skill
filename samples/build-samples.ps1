@@ -1,16 +1,16 @@
 <#
 .SYNOPSIS
-  Render every sample's scene.py + extract a thumbnail PNG.
+  Render every sample's scene.py + concat with cross-fades + extract thumbnail.
 
 .DESCRIPTION
-  Runs `python -m manim render -qm` against each samples/NN-*/scene.py and
-  copies the resulting mp4 to <sample-dir>/out.mp4. Then uses ffmpeg to grab
-  a frame near the end of the clip (default: 80% of duration) as
-  <sample-dir>/thumb.png. Sampling from the mp4 instead of `--save_last_frame`
-  avoids ending up with a black frame for samples that fade out.
+  Schema 0.2.0 samples ship multiple Scene classes per file (Scene01, Scene02, ...).
+  This script:
+    1. Renders each Scene class via `python -m manim render -q<flag>`.
+    2. Concatenates per-scene mp4s into <sample-dir>/out.mp4 via scripts/concat-xfade.py
+       (xfade transitions). Single-scene samples copy the mp4 directly.
+    3. Extracts a thumbnail (frame at 80% of duration via ffmpeg seek).
 
-  Sample 03 (fourier-math) is skipped if xelatex is missing; it ships a
-  pre-rendered placeholder thumb so the README grid still has all six tiles.
+  Sample 03 (fourier-math) is LaTeX-free since 0.2.0 and renders unconditionally.
 
 .PARAMETER Quality
   Manim quality flag suffix: low | medium | high. Default medium.
@@ -29,16 +29,16 @@ $ErrorActionPreference = "Continue"
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $qFlag = @{ low = "-ql"; medium = "-qm"; high = "-qh" }[$Quality]
 $qDir  = @{ low = "480p15"; medium = "720p30"; high = "1080p60" }[$Quality]
-$hasLatex  = $null -ne (Get-Command xelatex -ErrorAction SilentlyContinue)
 $hasFfmpeg = $null -ne (Get-Command ffmpeg  -ErrorAction SilentlyContinue)
 
+# Each sample lists per-scene class names + their storyboard durations (seconds).
 $samples = @(
-    @{ Dir = "01-pythagoras-2d";    Cls = "Pythagoras2DScene";    NeedsLatex = $false },
-    @{ Dir = "02-rotating-cube-3d"; Cls = "RotatingCube3DScene";  NeedsLatex = $false },
-    @{ Dir = "03-fourier-math";     Cls = "FourierMathScene";     NeedsLatex = $true  },
-    @{ Dir = "04-quadratic-plot";   Cls = "QuadraticPlotScene";   NeedsLatex = $false },
-    @{ Dir = "05-text-morph";       Cls = "TextMorphScene";       NeedsLatex = $false },
-    @{ Dir = "06-sine-wave-tracker"; Cls = "SineWaveTrackerScene"; NeedsLatex = $false }
+    @{ Dir = "01-pythagoras-2d";     Classes = @("Scene01","Scene02","Scene03"); Durations = @(7.0, 7.0, 4.0) },
+    @{ Dir = "02-rotating-cube-3d";  Classes = @("Scene01");                     Durations = @(9.0)            },
+    @{ Dir = "03-fourier-math";      Classes = @("Scene01","Scene02");           Durations = @(6.0, 6.0)       },
+    @{ Dir = "04-quadratic-plot";    Classes = @("Scene01");                     Durations = @(9.0)            },
+    @{ Dir = "05-text-morph";        Classes = @("Scene01");                     Durations = @(6.0)            },
+    @{ Dir = "06-sine-wave-tracker"; Classes = @("Scene01","Scene02");           Durations = @(3.0, 5.0)       }
 )
 
 function Get-VideoDurationSeconds {
@@ -50,41 +50,47 @@ function Get-VideoDurationSeconds {
 
 foreach ($s in $samples) {
     $dir = Join-Path $PSScriptRoot $s.Dir
-    if ($s.NeedsLatex -and -not $hasLatex) {
-        Write-Host "==> Skipping $($s.Dir) (no xelatex on PATH; placeholder thumb retained)" -ForegroundColor Yellow
-        continue
-    }
-    Write-Host "==> Rendering $($s.Dir)..." -ForegroundColor Cyan
+    Write-Host "==> Rendering $($s.Dir) ($($s.Classes.Count) scene(s))..." -ForegroundColor Cyan
 
     $sceneFile = Join-Path $dir "scene.py"
     $mediaDir  = Join-Path $dir ".manim_media"
+    $sceneMp4s = @()
+    $rendered = $true
 
-    & python -m manim render $qFlag --media_dir $mediaDir $sceneFile $s.Cls
-    if ($LASTEXITCODE -ne 0) {
-        Write-Host "    render failed for $($s.Dir)" -ForegroundColor Red
+    foreach ($cls in $s.Classes) {
+        & python -m manim render $qFlag --media_dir $mediaDir $sceneFile $cls
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "    render failed for $($s.Dir)/$cls" -ForegroundColor Red
+            $rendered = $false
+            break
+        }
+        $mp4 = Join-Path $mediaDir "videos\scene\$qDir\$cls.mp4"
+        if (Test-Path $mp4) { $sceneMp4s += $mp4 }
+    }
+
+    if (-not $rendered -or $sceneMp4s.Count -eq 0) {
+        Remove-Item $mediaDir -Recurse -Force -ErrorAction SilentlyContinue
         continue
     }
-    $mp4 = Join-Path $mediaDir "videos\scene\$qDir\$($s.Cls).mp4"
+
     $outMp4 = Join-Path $dir "out.mp4"
-    if (Test-Path $mp4) {
-        Copy-Item $mp4 $outMp4 -Force
+    if ($sceneMp4s.Count -eq 1) {
+        Copy-Item $sceneMp4s[0] $outMp4 -Force
+    } else {
+        $concatScript = Join-Path $repoRoot "scripts\concat-xfade.py"
+        $concatArgs = @("--inputs") + $sceneMp4s + @("--durations") + $s.Durations + @("--transition-s","0.7","--out",$outMp4)
+        $concatJson = & python $concatScript @concatArgs 2>$null
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "    concat-xfade failed for $($s.Dir): $concatJson" -ForegroundColor Yellow
+        }
     }
 
-    # Thumbnail: prefer ffmpeg-seek-from-mp4 (handles fade-to-black scenes correctly).
+    # Thumbnail: ffmpeg-seek-from-mp4 (handles fade-to-black scenes correctly).
     if ($hasFfmpeg -and (Test-Path $outMp4)) {
         $duration = Get-VideoDurationSeconds -Path $outMp4
         $seek = if ($duration) { [math]::Max(0.1, $duration * 0.8) } else { 1.0 }
         $thumb = Join-Path $dir "thumb.png"
         & ffmpeg -y -loglevel error -ss $seek -i $outMp4 -frames:v 1 $thumb 2>$null | Out-Null
-    } else {
-        # Fallback: manim --save_last_frame (may be empty for fade-out scenes).
-        & python -m manim render --save_last_frame $qFlag --media_dir $mediaDir $sceneFile $s.Cls
-        $png = Get-ChildItem -Path (Join-Path $mediaDir "images") -Filter "*.png" -Recurse -ErrorAction SilentlyContinue |
-               Where-Object { $_.Name -like "$($s.Cls)*" } |
-               Select-Object -First 1
-        if ($png) {
-            Copy-Item $png.FullName (Join-Path $dir "thumb.png") -Force
-        }
     }
 
     Remove-Item $mediaDir -Recurse -Force -ErrorAction SilentlyContinue

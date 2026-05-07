@@ -1,6 +1,6 @@
 meta:
   schema_version: "0.2.0"
-  title: "Broken - missing duration_s on scene_01"
+  title: "Broken - empty voiceover_text"
   topic: "fixture"
   source: { kind: idea, ref: null }
   quality: medium
@@ -9,11 +9,12 @@ meta:
   created_at: "2026-05-07T00:00:00Z"
 scenes:
   - id: scene_01
-    title: "Should fail validation"
-    beat: "scene missing duration_s"
+    title: "Two words only"
+    beat: "Validator should reject voiceover_text with fewer than 5 words."
+    duration_s: 5
     scene_class: Scene
     mobjects:
       - { type: Circle, name: c1 }
     animations:
-      - { target: c1, anim: Create, duration: 1 }
-    voiceover_text: "This scene is missing its required duration_s field."
+      - { target: c1, anim: Create, duration: 2 }
+    voiceover_text: "Pneumonoultramicroscopic word"

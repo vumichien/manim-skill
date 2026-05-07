@@ -1,15 +1,23 @@
 # Canonical reference storyboard for the Pythagoras-visual-proof sample.
-# This file is the contract between manim-planner and manim-implementer.
+# Schema v0.2.0 contract between manim-planner and manim-implementer.
 # Validates against schemas/storyboard.schema.json (Draft 2020-12).
 meta:
-  title: "Pythagoras' Theorem — Visual Proof"
+  schema_version: "0.2.0"
+  title: "Pythagoras' Theorem - Visual Proof"
   topic: "Pythagorean theorem visual rearrangement proof"
   source:
     kind: math
     ref: null
   quality: high
-  voice: null
+  voice: gtts
   total_duration_s: 24
+  transition_s: 0.7
+  palette:
+    primary: "#4ADEDC"
+    accent:  "#8B5CF6"
+    warn:    "#F5E6C8"
+    bg:      "#0F1B2D"
+  show_progress: true
   created_at: "2026-05-07T00:00:00Z"
   manim_version: "0.20.1"
 
@@ -19,6 +27,7 @@ scenes:
     beat: "Draw a right triangle with legs a, b and hypotenuse c. Label each side."
     duration_s: 8
     scene_class: Scene
+    show_title_card: true
     mobjects:
       - type: Polygon
         name: triangle
@@ -38,14 +47,15 @@ scenes:
     animations:
       - { target: triangle, anim: Create, duration: 2 }
       - { target: "VGroup(label_a, label_b, label_c)", anim: Write, duration: 1.5 }
-    voiceover_text: null
+    voiceover_text: "Start with a right triangle. The two legs are labeled a and b, and the hypotenuse is c."
     notes: "Triangle vertices computed at runtime: (0,0), (3,0), (0,4). Labels offset 0.3 outward."
 
   - id: scene_02
     title: "Rearrange into the equality"
-    beat: "Duplicate triangle 3x; arrange 4 copies into a square of side a+b. Show area = c² in the middle."
+    beat: "Duplicate triangle 3x; arrange 4 copies into a square of side a+b. Show area = c-squared in the middle."
     duration_s: 10
     scene_class: Scene
+    show_title_card: true
     mobjects:
       - type: VGroup
         name: four_triangles
@@ -61,14 +71,15 @@ scenes:
       - { target: four_triangles, anim: LaggedStart, duration: 3, kwargs: { lag_ratio: 0.4 } }
       - { target: inner_square, anim: DrawBorderThenFill, duration: 2 }
       - { target: c_squared, anim: Write, duration: 2 }
-    voiceover_text: null
+    voiceover_text: "Now copy the triangle four times and arrange them inside a square of side a plus b. The empty middle has area c squared."
     notes: "MathTex requires LaTeX; if absent, fall back to Text('c^2'). Implementer decides."
 
   - id: scene_03
-    title: "Conclude a² + b² = c²"
-    beat: "Slide two triangles so the inner shapes form two squares of areas a² and b². Show the equation."
+    title: "Conclude a-squared plus b-squared equals c-squared"
+    beat: "Slide two triangles so the inner shapes form two squares of areas a-squared and b-squared. Show the equation."
     duration_s: 6
     scene_class: Scene
+    show_title_card: false
     mobjects:
       - type: MathTex
         name: equation
@@ -77,5 +88,5 @@ scenes:
     animations:
       - { target: equation, anim: Write, duration: 2.5 }
       - { target: equation, anim: Indicate, duration: 1.5 }
-    voiceover_text: null
+    voiceover_text: "Slide two triangles to form two smaller squares with areas a squared and b squared. Their sum equals c squared."
     notes: "Final hold of 1s for poster frame."

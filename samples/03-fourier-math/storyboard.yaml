@@ -1,10 +1,18 @@
 meta:
-  title: "Fourier series — formula"
+  schema_version: "0.2.0"
+  title: "Fourier series - formula"
   topic: "Display the general Fourier series and expand the first three terms"
   source: { kind: math, ref: null }
   quality: medium
   voice: null
   total_duration_s: 12
+  transition_s: 0.7
+  palette:
+    primary: "#4ADEDC"
+    accent:  "#8B5CF6"
+    warn:    "#F5E6C8"
+    bg:      "#0F1B2D"
+  show_progress: true
   created_at: "2026-05-07T00:00:00Z"
   manim_version: "0.20.1"
 
@@ -14,29 +22,31 @@ scenes:
     beat: "Display the general Fourier series with summation."
     duration_s: 6
     scene_class: Scene
+    show_title_card: true
     mobjects:
-      - type: MathTex
+      - type: Text
         name: general
-        content: "f(x) = a_0 + \\sum_{n=1}^{\\infty} \\left( a_n \\cos(nx) + b_n \\sin(nx) \\right)"
-        kwargs: { font_size: 56 }
+        content: "f(x) = a0 + sum (an cos nx + bn sin nx)"
+        kwargs: { font_size: 36 }
     animations:
       - { target: general, anim: Write, duration: 3 }
       - { target: general, anim: Indicate, duration: 1.5 }
-    voiceover_text: null
-    notes: "Requires LaTeX. If not present, fall back to Text."
+    voiceover_text: "The general Fourier series writes any periodic function as a sum of cosines and sines with adjustable coefficients."
+    notes: "LaTeX-free: uses Text (was MathTex in 0.1.x). Body shifted DOWN 0.5 to clear header."
 
   - id: scene_02
     title: "Expanded first three terms"
-    beat: "Transform the summation into the first three explicit terms."
+    beat: "Show the first three explicit terms of the Fourier series."
     duration_s: 6
     scene_class: Scene
+    show_title_card: true
     mobjects:
-      - type: MathTex
+      - type: Text
         name: expanded
-        content: "f(x) = a_0 + a_1 \\cos(x) + b_1 \\sin(x) + a_2 \\cos(2x) + b_2 \\sin(2x) + \\cdots"
-        kwargs: { font_size: 40 }
+        content: "f(x) = a0 + a1 cos x + b1 sin x + a2 cos 2x + b2 sin 2x + ..."
+        kwargs: { font_size: 28 }
     animations:
       - { target: expanded, anim: Write, duration: 4 }
       - { target: expanded, anim: Indicate, duration: 1.5 }
-    voiceover_text: null
-    notes: "Both scenes share the same screen position — could be combined with Transform if needed."
+    voiceover_text: "Expanded out, the first three terms read a zero plus a one cosine x plus b one sine x and so on."
+    notes: "LaTeX-free: uses Text. Body shifted DOWN 0.5 to clear header."

@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-# Render every sample's scene.py + extract a thumbnail PNG.
+# Render every sample's scene.py + concat with cross-fades + extract thumbnail.
 #
-# Thumbnails are sampled from the rendered mp4 with ffmpeg (~80% of duration)
-# instead of `--save_last_frame`, so fade-out scenes still produce a visible
-# thumb. Sample 03 (fourier-math) is skipped if xelatex is missing; its
-# pre-rendered placeholder thumb is left in place so the README grid stays
-# complete.
+# Schema 0.2.0 samples ship multiple Scene classes per file (Scene01, Scene02, ...).
+# This script renders each class, then concatenates per-scene mp4s into out.mp4
+# via scripts/concat-xfade.py with cross-fade transitions. Single-scene samples
+# copy the mp4 directly. Thumbnails are sampled from out.mp4 at ~80% duration.
 set -uo pipefail
 
 QUALITY="${1:-medium}"
@@ -16,17 +15,18 @@ case "$QUALITY" in
   *) echo "Quality must be low|medium|high"; exit 2 ;;
 esac
 
-if command -v xelatex >/dev/null 2>&1; then HAS_LATEX=1; else HAS_LATEX=0; fi
-if command -v ffmpeg  >/dev/null 2>&1; then HAS_FFMPEG=1; else HAS_FFMPEG=0; fi
+if command -v ffmpeg >/dev/null 2>&1; then HAS_FFMPEG=1; else HAS_FFMPEG=0; fi
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 
+# entry format: dir:class1,class2,...:dur1,dur2,...
 samples=(
-  "01-pythagoras-2d:Pythagoras2DScene:0"
-  "02-rotating-cube-3d:RotatingCube3DScene:0"
-  "03-fourier-math:FourierMathScene:1"
-  "04-quadratic-plot:QuadraticPlotScene:0"
-  "05-text-morph:TextMorphScene:0"
-  "06-sine-wave-tracker:SineWaveTrackerScene:0"
+  "01-pythagoras-2d:Scene01,Scene02,Scene03:7.0,7.0,4.0"
+  "02-rotating-cube-3d:Scene01:9.0"
+  "03-fourier-math:Scene01,Scene02:6.0,6.0"
+  "04-quadratic-plot:Scene01:9.0"
+  "05-text-morph:Scene01:6.0"
+  "06-sine-wave-tracker:Scene01,Scene02:3.0,5.0"
 )
 
 video_duration_seconds() {
@@ -34,26 +34,44 @@ video_duration_seconds() {
 }
 
 for entry in "${samples[@]}"; do
-  IFS=':' read -r dir cls needs_latex <<<"$entry"
-  if [[ "$needs_latex" == "1" && "$HAS_LATEX" == "0" ]]; then
-    echo "==> Skipping $dir (no xelatex on PATH; placeholder thumb retained)"
-    continue
-  fi
+  IFS=':' read -r dir classes durations <<<"$entry"
   echo "==> Rendering $dir..."
 
   sample_dir="$SCRIPT_DIR/$dir"
   scene_file="$sample_dir/scene.py"
   media_dir="$sample_dir/.manim_media"
+  mp4_paths=()
+  rendered=1
 
-  python -m manim render $QFLAG --media_dir "$media_dir" "$scene_file" "$cls" || {
-    echo "    render failed for $dir"
+  IFS=',' read -ra cls_arr <<<"$classes"
+  IFS=',' read -ra dur_arr <<<"$durations"
+
+  for cls in "${cls_arr[@]}"; do
+    python -m manim render $QFLAG --media_dir "$media_dir" "$scene_file" "$cls" || {
+      echo "    render failed for $dir/$cls"
+      rendered=0
+      break
+    }
+    mp4_path="$media_dir/videos/scene/$QDIR/$cls.mp4"
+    [[ -f "$mp4_path" ]] && mp4_paths+=("$mp4_path")
+  done
+
+  if [[ "$rendered" == "0" || ${#mp4_paths[@]} -eq 0 ]]; then
+    rm -rf "$media_dir"
     continue
-  }
-  mp4_path="$media_dir/videos/scene/$QDIR/$cls.mp4"
-  out_mp4="$sample_dir/out.mp4"
-  [[ -f "$mp4_path" ]] && cp "$mp4_path" "$out_mp4"
+  fi
 
-  # Thumbnail: ffmpeg seek (handles fade-out scenes); fallback to --save_last_frame.
+  out_mp4="$sample_dir/out.mp4"
+  if [[ ${#mp4_paths[@]} -eq 1 ]]; then
+    cp "${mp4_paths[0]}" "$out_mp4"
+  else
+    python "$REPO_ROOT/scripts/concat-xfade.py" \
+      --inputs "${mp4_paths[@]}" \
+      --durations "${dur_arr[@]}" \
+      --transition-s 0.7 \
+      --out "$out_mp4" >/dev/null || echo "    concat-xfade failed for $dir"
+  fi
+
   if [[ "$HAS_FFMPEG" == "1" && -f "$out_mp4" ]]; then
     duration=$(video_duration_seconds "$out_mp4")
     if [[ -n "$duration" ]]; then
@@ -62,10 +80,6 @@ for entry in "${samples[@]}"; do
       seek="1.0"
     fi
     ffmpeg -y -loglevel error -ss "$seek" -i "$out_mp4" -frames:v 1 "$sample_dir/thumb.png" >/dev/null 2>&1
-  else
-    python -m manim render --save_last_frame $QFLAG --media_dir "$media_dir" "$scene_file" "$cls" >/dev/null 2>&1
-    png_path=$(find "$media_dir/images" -name "${cls}*.png" -type f 2>/dev/null | head -n1)
-    [[ -n "${png_path:-}" ]] && cp "$png_path" "$sample_dir/thumb.png"
   fi
 
   rm -rf "$media_dir"

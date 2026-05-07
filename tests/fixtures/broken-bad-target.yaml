@@ -1,5 +1,6 @@
 meta:
-  title: "Broken — animation target does not match any mobject name"
+  schema_version: "0.2.0"
+  title: "Broken - animation target does not match any mobject name"
   topic: "fixture"
   source: { kind: idea, ref: null }
   quality: medium
@@ -9,11 +10,11 @@ meta:
 scenes:
   - id: scene_01
     title: "Bad target"
-    beat: "Animation references a mobject name that doesn't exist."
+    beat: "Animation references a mobject name that does not exist."
     duration_s: 5
     scene_class: Scene
     mobjects:
       - { type: Circle, name: real_circle }
     animations:
       - { target: ghost_circle, anim: Create, duration: 2 }
-    voiceover_text: null
+    voiceover_text: "This animation targets a name no mobject claims."

@@ -1,5 +1,6 @@
 meta:
-  title: "Broken — meta.total_duration_s differs from sum(scenes.duration_s) by >1s"
+  schema_version: "0.2.0"
+  title: "Broken - meta.total_duration_s differs from sum(scenes.duration_s) by >1s"
   topic: "fixture"
   source: { kind: idea, ref: null }
   quality: medium
@@ -16,7 +17,7 @@ scenes:
       - { type: Circle, name: c1 }
     animations:
       - { target: c1, anim: Create, duration: 2 }
-    voiceover_text: null
+    voiceover_text: "Scene one runs for five seconds with a single circle."
   - id: scene_02
     title: "Five seconds"
     beat: "Scene two."
@@ -26,4 +27,4 @@ scenes:
       - { type: Square, name: s1 }
     animations:
       - { target: s1, anim: Create, duration: 2 }
-    voiceover_text: null
+    voiceover_text: "Scene two runs for five seconds with a single square."

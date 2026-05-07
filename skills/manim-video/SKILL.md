@@ -1,16 +1,18 @@
 ---
 name: manim-video
-description: Generate Manim animations from ideas, research papers, or math topics. Use when user asks to "make a video about X", "animate X", "explain X with Manim", or invokes /manim-video. Orchestrates a 4-role pipeline (researcher + planner + implementer + main) to produce out/<run-id>/video.mp4 plus storyboard, scenes, and narration script.
+description: Generate Manim animations from ideas, research papers, or math topics. Use when user asks to "make a video about X", "animate X", "explain X with Manim", or invokes /manim-video. Orchestrates a 4-role pipeline (researcher + planner + implementer + main) to produce out/<run-id>/video.mp4 with chrome (header bar + captions) and cross-fade transitions, plus storyboard, scenes, narration script, and captions.srt.
 license: Apache-2.0
 metadata:
   author: vumichien
-  version: "0.1.0"
-  homepage: https://github.com/vumichien/manim-skill
+  version: "0.2.0"
+  homepage: https://github.com/vumichien/2026-manim-skill
 ---
 
 # manim-video
 
-Turn ideas, papers, and math topics into rendered Manim animations.
+Turn ideas, papers, and math topics into rendered Manim animations with on-screen
+chrome (header bar + scene title cards), bottom-of-frame captions, gtts voiceover
+(default), and cross-fade transitions between scenes.
 
 ## When to use
 
@@ -27,15 +29,18 @@ Do **not** activate for:
 
 ## Inputs
 
-| Flag | Required | Notes |
-|---|---|---|
-| `--idea "<topic>"` | one of these three | Pure topic; pipeline invents scope. |
-| `--paper <id\|url\|path>` | one of these three | arXiv id, PDF (local/URL), or HTML page. |
-| `--math "<topic>"` | one of these three | Math specialization; prefers MathTex when LaTeX available. |
-| `--voice [gtts\|openai\|elevenlabs]` | optional | Default: no voice. `gtts` is keyless. |
-| `--quality low\|medium\|high\|4k` | optional | Default `high` (1080p60). |
-| `--storyboard-only` | optional | Stop after T1; skip rendering. |
-| `--out <dir>` | optional | Default `out/<run-id>/`. |
+| Flag | Required | Default | Notes |
+|---|---|---|---|
+| `--idea "<topic>"` | one of these three | — | Pure topic; pipeline invents scope. |
+| `--paper <id\|url\|path>` | one of these three | — | arXiv id, PDF (local/URL), or HTML page. |
+| `--math "<topic>"` | one of these three | — | Math specialization; prefers MathTex when LaTeX available. |
+| `--voice gtts\|openai\|elevenlabs` | optional | `gtts` | **Default flipped from `null` to `gtts` in 0.2.0.** Keyless for gtts. |
+| `--no-voice` | optional | off | Opt out; captions still render. Mutually exclusive with `--voice`. |
+| `--no-chrome` | optional | off | Disable header + title cards. Captions still render. |
+| `--transition-s <float>` | optional | 0.7 | Cross-fade duration; range 0.3–1.5. |
+| `--quality low\|medium\|high\|4k` | optional | `high` | 1080p60 default. |
+| `--storyboard-only` | optional | off | Stop after T1; skip rendering. |
+| `--out <dir>` | optional | `out/<run-id>/` | Override output directory. |
 
 Run-id format: `<YYMMDD-HHMM>-<slug>` (slug derived from topic, ≤40 chars).
 
@@ -44,14 +49,30 @@ Run-id format: `<YYMMDD-HHMM>-<slug>` (slug derived from topic, ≤40 chars).
 ```
 T0 main → spawn manim-researcher  (reads source.md if --paper)  → outline.md
        || spawn manim-planner skeleton                          → storyboard.draft.yaml
-T1 main → spawn manim-planner final (reads outline + draft)     → storyboard.yaml
-T2 main → spawn manim-implementer (reads storyboard, retries)   → scenes/scene_*.py + video.mp4
-T3 main → write summary.md
+T1 main → spawn manim-planner final (reads outline + draft)     → storyboard.yaml (schema 0.2.0)
+T2 main → spawn manim-implementer
+            → emits scenes/_shared.py (chrome module, palette substituted)
+            → emits scenes/scene_NN.py per scene (header + title card + caption track)
+            → renders per-scene mp4 via scripts/render.py (retry budget = 5)
+            → calls scripts/concat-xfade.py with meta.transition_s
+            → calls scripts/emit-captions-srt.py to write captions.srt
+T3 main → write summary.md (+ paths to captions.srt, _shared.py)
 ```
 
 ### Step-by-step
 
-1. **Parse flags.** Validate exactly one of `--idea/--paper/--math`. Derive `run_id` and `out_dir`. Set `voice = flag_value or null`. Set `quality = flag_value or "high"`. Read `manim_version` from installed `manim` (or fall back to `0.20.x`).
+1. **Parse flags.** Validate exactly one of `--idea/--paper/--math`. Derive `run_id` and `out_dir`. Resolve voice:
+   ```
+   if --no-voice: voice = null
+   elif --voice <p>: voice = <p>
+   else: voice = "gtts"        # default since 0.2.0
+   ```
+   Resolve chrome:
+   ```
+   show_progress     = not --no-chrome
+   show_title_card   = not --no-chrome   (per-scene; planner override possible)
+   ```
+   Validate `--transition-s` in [0.3, 1.5]; clamp on out-of-range.
 
 2. **Ingest (only if `--paper`).** Run:
    ```bash
@@ -63,46 +84,15 @@ T3 main → write summary.md
 
    Read `agents/manim-researcher.md` and `agents/manim-planner.md`. Spawn both via the `Task` tool **in a single message** so they run concurrently:
 
-   - Task A: subagent_type=`general-purpose`, prompt = `<contents of agents/manim-researcher.md>` + run-specific args:
-     ```
-     RUN ARGS:
-       run_id: <run_id>
-       out_dir: <out_dir>
-       source: idea|math|paper:<ref>
-       topic: "<topic>"
-       source_md_path: <out_dir>/source.md   # only if --paper
-     OUTPUT: write <out_dir>/outline.md (≤300 lines, sections: tldr, key_concepts, derivations_or_proofs, visual_metaphors, narrative_arc)
-     ```
+   - Task A: subagent_type=`general-purpose`, prompt = `<contents of agents/manim-researcher.md>` + run-specific args (run_id, out_dir, source/topic, source_md_path if --paper).
 
-   - Task B: subagent_type=`general-purpose`, prompt = `<contents of agents/manim-planner.md>` + skeleton-mode args:
-     ```
-     RUN ARGS:
-       mode: skeleton
-       run_id: <run_id>
-       out_dir: <out_dir>
-       topic: "<topic>"
-       voice: <voice or null>
-       quality: <quality>
-     OUTPUT: write <out_dir>/storyboard.draft.yaml (scene IDs + beats + durations only; mobjects/animations as TODO).
-     ```
+   - Task B: subagent_type=`general-purpose`, prompt = `<contents of agents/manim-planner.md>` + skeleton-mode args (mode: skeleton, run_id, out_dir, topic, voice, quality, no_chrome, transition_s).
 
-4. **T1 — final storyboard.** After T0 returns, spawn:
-   - subagent_type=`general-purpose`, prompt = `<contents of agents/manim-planner.md>` + final-mode args:
-     ```
-     RUN ARGS:
-       mode: final
-       run_id: <run_id>
-       out_dir: <out_dir>
-       outline_path: <out_dir>/outline.md
-       draft_path:   <out_dir>/storyboard.draft.yaml
-     OUTPUT: write <out_dir>/storyboard.yaml — fully populated mobjects/animations per schemas/storyboard.schema.json.
-     ```
-
-   Validate the result:
+4. **T1 — final storyboard.** After T0 returns, spawn the planner in `mode: final` with `outline_path`, `draft_path`, and on retry, `validation_errors`. Then validate:
    ```bash
    python scripts/validate-storyboard.py <out_dir>/storyboard.yaml
    ```
-   If exit non-zero: re-spawn the planner once with the validator's stderr appended to the prompt as `VALIDATION_ERRORS:`. After two failures, escalate to summary.md.
+   If exit non-zero: re-spawn the planner once with `validation_errors`. After two failures, escalate to summary.md.
 
 5. **`--storyboard-only` short-circuit.** If flag set, jump to step 7.
 
@@ -114,33 +104,38 @@ T3 main → write summary.md
        out_dir: <out_dir>
        storyboard_path: <out_dir>/storyboard.yaml
        quality: <quality>
-       voice: <voice or null>
+       voice: <gtts|openai|elevenlabs|null>
+       no_chrome: <true|false>
        retry_budget: 5
-     OUTPUT: write <out_dir>/scenes/scene_NN.py for each scene; render via scripts/render.py; concatenate into <out_dir>/video.mp4. Honor retry budget per scene.
+     OUTPUT: scenes/_shared.py + scenes/scene_NN.py + manim_media/ + render.log + video.mp4 + captions.srt
      ```
 
-   Implementer writes a `<out_dir>/render.log` with per-scene render JSON and timings.
+   Implementer writes `<out_dir>/render.log` with per-scene render JSON (now including `chrome_emitted`, `voice_path`, `scene_duration_s` fields).
 
 7. **T3 — summary.** Write `<out_dir>/summary.md` with:
    - Run id, command-line args, total duration
-   - Paths: source.md, outline.md, storyboard.yaml, scenes/, video.mp4 (if rendered)
+   - Paths: source.md, outline.md, storyboard.yaml, scenes/_shared.py, scenes/, video.mp4, captions.srt
    - Render outcomes (per scene: ok / error_class / render_time_s)
+   - Voice path summary (gtts | fallback_caption_only | none); link error.md if voice fallback occurred
    - Next steps if errors occurred
 
 ## Outputs
 
 ```
 out/<run-id>/
-├── source.md         # only if --paper (frontmatter + extracted markdown)
-├── source.meta.json  # only if --paper
-├── outline.md        # researcher: tldr + key concepts + visual metaphors + narrative arc
-├── storyboard.draft.yaml  # planner skeleton
-├── storyboard.yaml   # planner final (validated)
+├── source.md                # only if --paper (frontmatter + extracted markdown)
+├── source.meta.json         # only if --paper
+├── outline.md               # researcher: tldr + key concepts + visual metaphors + narrative arc
+├── storyboard.draft.yaml    # planner skeleton (schema 0.2.0)
+├── storyboard.yaml          # planner final (validated, schema 0.2.0)
 ├── scenes/
-│   └── scene_NN.py   # implementer-emitted Manim scenes
-├── manim_media/      # raw Manim render artifacts
-├── video.mp4         # final concatenated render (or per-scene mp4s if no concat)
-├── render.log        # per-scene render JSON
+│   ├── _shared.py           # chrome module emitted ONCE per run
+│   └── scene_NN.py          # implementer-emitted Manim scenes
+├── manim_media/             # raw Manim render artifacts
+├── video.mp4                # final concatenated render with cross-fades
+├── captions.srt             # SRT captions (cumulative offsets across all scenes)
+├── render.log               # per-scene render JSON (with chrome_emitted, voice_path, scene_duration_s)
+├── error.md                 # only if any scene failed or voice fallback triggered
 └── summary.md
 ```
 
@@ -148,18 +143,24 @@ out/<run-id>/
 
 - **Ingest fails** → stop after step 2; summary.md notes the URL/PDF that failed.
 - **Storyboard invalid twice** → escalate to user; do not start rendering.
-- **Render fails after retry budget exhausted** → implementer keeps successful scenes, logs failed ones in render.log; main concatenates only successful scenes; summary.md flags incomplete render.
+- **Render fails after retry budget exhausted** → implementer keeps successful scenes; concat-xfade builds video from successful subset; summary.md flags incomplete render.
 - **LaTeX missing + --math used** → main pre-checks `xelatex --version`. If absent: warn user, downgrade MathTex hints to Text in the storyboard via planner second-pass.
+- **Voice fallback** → after second voice-related failure on any scene, all remaining scenes downgrade to voice-free. Logged in error.md; final video is captioned only.
+- **xfade unavailable** → concat-xfade falls back to plain ffmpeg concat (hard cuts). Logged in summary.md.
 
 ## References
 
 Lazy-load these only when needed:
 
-- [`references/manim-api-cheatsheet.md`](references/manim-api-cheatsheet.md) — Mobject + animation reference
-- [`references/storyboard-schema.md`](references/storyboard-schema.md) — Storyboard YAML format
+- [`references/manim-api-cheatsheet.md`](references/manim-api-cheatsheet.md) — Mobject + animation reference + chrome helpers
+- [`references/storyboard-schema.md`](references/storyboard-schema.md) — Storyboard YAML format (v0.2.0)
+- [`references/voiceover-text-style.md`](references/voiceover-text-style.md) — Style guide for `voiceover_text` field
+- [`references/shared-chrome-template.py`](references/shared-chrome-template.py) — Template the implementer copies into _shared.py
 - [`references/flag-reference.md`](references/flag-reference.md) — Long-form flag semantics
 - [`references/render-runner-contract.md`](references/render-runner-contract.md) — `scripts/render.py` JSON contract
-- [`references/voiceover-setup.md`](references/voiceover-setup.md) — TTS provider env vars
+- [`references/xfade-concat-contract.md`](references/xfade-concat-contract.md) — `scripts/concat-xfade.py` JSON contract
+- [`references/voiceover-setup.md`](references/voiceover-setup.md) — TTS provider env vars + fallback policy
+- [`../../docs/storyboard-migration-0.2.0.md`](../../docs/storyboard-migration-0.2.0.md) — 0.1.x → 0.2.0 migration guide
 
 Agent prompts live in `agents/`:
 
