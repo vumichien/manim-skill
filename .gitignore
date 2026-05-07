@@ -39,3 +39,13 @@ dist/
 # Plans / docs scratch (keep tracked content under version control by default;
 # uncomment specific patterns if you decide otherwise)
 # plans/**/scratch/
+
+# CK toolchain — local-dev-only; not part of the published plugin.
+# (.claude-plugin/ at the repo root IS the plugin; .claude/ is the development env.)
+.claude/
+
+# Per-sample manim scratch
+samples/*/.manim_media/
+
+# Hero-render scratch
+.tmp_hero/
