@@ -46,6 +46,13 @@ target-version = "py311"
 select = ["E", "F", "I", "B", "UP"]
 ignore = ["E501"]
 
+[tool.ruff.lint.per-file-ignores]
+# Manim scenes idiomatically use `from manim import *` so every Manim primitive
+# is in scope without per-name imports. Silence the wildcard-import rules in
+# scene files (samples + test fixtures) only.
+"samples/**/scene.py" = ["F403", "F405"]
+"tests/fixtures/*.py" = ["F403", "F405"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"

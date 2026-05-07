@@ -16,10 +16,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from ingest_shared import detect_source_kind  # noqa: E402
-
 # Re-import sibling ingestors as functions so we stay in-process (single venv).
 import importlib.util  # noqa: E402
+
+from ingest_shared import detect_source_kind  # noqa: E402
 
 
 def _load_module(filename: str, alias: str):

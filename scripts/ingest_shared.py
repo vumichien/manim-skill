@@ -11,8 +11,9 @@ import datetime as _dt
 import json
 import re
 import time
+from collections.abc import Callable
 from pathlib import Path
-from typing import Any, Callable, Literal, TypeVar
+from typing import Any, Literal, TypeVar
 
 T = TypeVar("T")
 SourceKind = Literal["arxiv", "pdf", "url"]
@@ -52,7 +53,7 @@ def normalize_arxiv_id(raw: str) -> str:
 
 
 def utc_now_iso() -> str:
-    return _dt.datetime.now(_dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return _dt.datetime.now(_dt.UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
 def make_run_id(slug: str) -> str:

@@ -96,7 +96,7 @@ def main() -> int:
     args = ap.parse_args()
 
     if not args.url.startswith(("http://", "https://")):
-        print(f"error: url must start with http:// or https://", file=sys.stderr)
+        print("error: url must start with http:// or https://", file=sys.stderr)
         return 1
 
     try:

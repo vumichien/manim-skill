@@ -1,0 +1,29 @@
+# Auto-run on every PR by https://pre-commit.ci. Mirrors the lint step in .github/workflows/ci.yml.
+# Locally: `pip install pre-commit && pre-commit install` then `pre-commit run --all-files`.
+
+ci:
+  autofix_commit_msg: "style: pre-commit auto-fixes"
+  autoupdate_commit_msg: "chore: pre-commit autoupdate"
+  autoupdate_schedule: monthly
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: '\.(svg|gif|png|mp4)$'
+      - id: end-of-file-fixer
+        exclude: '\.(svg|gif|png|mp4)$'
+      - id: check-yaml
+        args: [--allow-multiple-documents]
+      - id: check-json
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=2048]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff
+        args: [--fix]

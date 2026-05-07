@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import pytest
-
 from ingest_shared import detect_source_kind, normalize_arxiv_id
 
 
