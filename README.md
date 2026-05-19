@@ -189,7 +189,7 @@ See [`docs/storyboard-migration-0.2.0.md`](docs/storyboard-migration-0.2.0.md) f
 | `--quality` | `low\|medium\|high\|4k` | `high` | `high` = 1080p60. |
 | `--storyboard-only` | (flag) | off | Stop after planning; skip render. |
 | `--out` | `<dir>` | `out/<run-id>/` | Override output directory. |
-| `--optimize` | `<corpus.yaml>` | — | Power-user: tune agent prompts via GEPA against your own corpus. See [`docs/gepa-optimization.md`](docs/gepa-optimization.md). |
+| `--optimize` | `<corpus.yaml>` | — | Power-user: tune agent prompts via GEPA against your own corpus. See [`REPRODUCE.md`](REPRODUCE.md). |
 
 Full semantics: [`skills/manim-video/references/flag-reference.md`](skills/manim-video/references/flag-reference.md).
 
@@ -360,7 +360,8 @@ Apache-2.0. See [`LICENSE`](LICENSE).
   gtts / OpenAI / ElevenLabs voiceover integration.
 - **[GEPA](https://github.com/gepa-ai/gepa)** (Agrawal et al., 2025) — the
   reflective prompt-evolution framework used offline to tune the 4-role
-  agent prompts. MIT.
+  agent prompts. MIT. See [`REPRODUCE.md`](REPRODUCE.md) for the step-by-step
+  guide to running optimization yourself.
 - **[DSPy](https://github.com/stanfordnlp/dspy)** — the conceptual ancestor of
   GEPA and the Stanford NLP work on programmatic LM pipelines.
 - **[Claude Code](https://claude.ai/code)** — the agent runtime that hosts
