@@ -56,3 +56,7 @@ samples/*/.manim_media/
 
 # Hero-render scratch
 .tmp_hero/
+
+# GEPA prompt-optimization run archives (per-run candidates, traces, diffs).
+# Maintainers archive winning candidates manually; raw runs stay local.
+plans/gepa-runs/

@@ -1,6 +1,6 @@
 [project]
 name = "manim-skill"
-version = "0.1.0"
+version = "0.3.0"
 description = "Turn ideas, papers, and math into Manim animations via a 4-role agent pipeline (Claude Code plugin)."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -31,6 +31,10 @@ voice = ["manim-voiceover[gtts,openai,elevenlabs]>=0.3"]
 dev = [
     "pytest>=8",
     "ruff>=0.6",
+    # GEPA prompt-optimization (offline, maintainer-only). Reflection LM via litellm.
+    # Never required at runtime — confined to scripts/optimize-prompts.py.
+    "gepa>=0.1.1",
+    "litellm>=1.50",
 ]
 
 [project.urls]

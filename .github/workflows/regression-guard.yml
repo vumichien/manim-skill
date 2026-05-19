@@ -1,0 +1,67 @@
+name: gepa-regression-guard
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "agents/**"
+      - "tests/gepa/valset.yaml"
+      - "tests/gepa/.valset.sha256"
+      - "samples/0*/storyboard.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  six-samples-must-render:
+    name: 6 samples must render
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: System libs (cairo/pango/ffmpeg)
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y libcairo2-dev libpango1.0-dev pkg-config ffmpeg
+
+      - name: Install uv
+        run: curl -LsSf https://astral.sh/uv/install.sh | sh
+
+      - name: Add uv to PATH
+        run: echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Bootstrap venv + install deps
+        run: bash scripts/install.sh --skip-latex
+        env:
+          VENV_PATH: .venv
+
+      - name: Dev extras (gepa stack — only needed for adapter tests, not the guard)
+        run: .venv/bin/pip install pytest pyyaml
+
+      - name: Valset hash gate
+        id: hash
+        run: .venv/bin/pytest tests/gepa/test_valset_immutable.py -v --tb=short
+        continue-on-error: true
+
+      - name: Allow valset change only with explicit label
+        if: steps.hash.outcome == 'failure'
+        run: |
+          if echo "${{ join(github.event.pull_request.labels.*.name, ',') }}" | grep -q "samples-valset-update"; then
+            echo "Hash diff accepted via samples-valset-update label."
+          else
+            echo "Hash drift without the 'samples-valset-update' label."
+            echo "Either revert the valset change or add the label after explicit human review."
+            exit 1
+          fi
+
+      - name: Regression render (6 samples, --quality low)
+        env:
+          GEPA_REGRESSION_GUARD: "1"
+        run: .venv/bin/pytest tests/gepa/test_regression_guard.py -v --tb=short

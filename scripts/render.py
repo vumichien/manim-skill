@@ -16,8 +16,20 @@ JSON contract (stable):
     "output_path": str | null,
     "error_class": "latex" | "import" | "name" | "type" | "timeout" | "other" | null,
     "stderr_tail": str,
-    "command": [str]
+    "command": [str],
+    "mathtex_present": bool,
+    "mathtex_suspected_empty": bool | null,
+    "black_pixel_ratio": float | null
   }
+
+Silent-MathTex detection: when xelatex is missing or LaTeX errors are swallowed,
+Manim falls back to an empty VGroup and the frame renders ~all black around the
+expected MathTex region. We scan the scene source for `MathTex(` / `Tex(`, and
+if present (and render succeeded with a real video file), sample 3 frames with
+ffmpeg and compute the near-black pixel ratio. `mathtex_suspected_empty` is
+True only when MathTex usage was found AND a sampled frame is >99% near-black.
+Any failure in the check sets the two derived fields to null and never breaks
+the render itself.
 """
 from __future__ import annotations
 
@@ -28,6 +40,9 @@ import subprocess
 import sys
 import time
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from mathtex_check import check_mathtex  # noqa: E402
 
 QUALITY_FLAG: dict[str, str] = {"low": "-ql", "medium": "-qm", "high": "-qh", "4k": "-qk"}
 QUALITY_DIR: dict[str, str] = {
@@ -138,6 +153,7 @@ def main() -> int:
         "stderr_tail": stderr_tail,
         "command": cmd,
     }
+    result.update(check_mathtex(args.scene_file, output_path, args.dry_run))
     print(json.dumps(result, indent=2))
     return 0 if ok else 1
 

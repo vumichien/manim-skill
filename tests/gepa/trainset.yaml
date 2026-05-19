@@ -1,0 +1,219 @@
+# GEPA trainset — see README.md for curation rules.
+# Distribution targets: ~40% idea, 30% math, 30% paper.
+# Difficulty: ~40% easy, 40% medium, 20% hard.
+# Domains: math >=8, cs >=5, physics >=5, plus other.
+# Anti-overlap: no topic duplicates samples/01-06 (Pythagoras, rotating cube,
+# Fourier series, quadratic plot, text morph, sine-wave tracker).
+
+# --- idea (12) -------------------------------------------------------------
+- id: 01-why-sky-blue
+  mode: idea
+  input: "Why is the sky blue?"
+  difficulty: easy
+  domain: physics
+  expected_traits: "Rayleigh scattering; wavelength visualization; sun + atmosphere diagram"
+
+- id: 02-bayes-theorem-intuition
+  mode: idea
+  input: "Bayes' theorem with a coin-and-test intuition example"
+  difficulty: medium
+  domain: stats
+  expected_traits: "Tree diagram; prior/likelihood/posterior labels; MathTex"
+
+- id: 03-binary-search-divide
+  mode: idea
+  input: "Binary search as a divide-and-conquer algorithm"
+  difficulty: easy
+  domain: cs
+  expected_traits: "Array of squares; pointer animations; O(log n) callout"
+
+- id: 04-merge-sort-recursive
+  mode: idea
+  input: "Merge sort: recursive split and merge"
+  difficulty: medium
+  domain: cs
+  expected_traits: "Tree recursion split; two-pointer merge; bar chart sort"
+
+- id: 05-monte-hall-paradox
+  mode: idea
+  input: "Monty Hall paradox visualized"
+  difficulty: medium
+  domain: stats
+  expected_traits: "Three doors; switch vs stay; probability bar"
+
+- id: 06-pca-2d-projection
+  mode: idea
+  input: "Principal component analysis on 2D data"
+  difficulty: hard
+  domain: math
+  expected_traits: "Scatter cloud; rotated axes; variance preserved"
+
+- id: 07-attention-mechanism
+  mode: idea
+  input: "Self-attention in transformers, intuition only"
+  difficulty: hard
+  domain: cs
+  expected_traits: "Token boxes; weighted arrows; softmax shading"
+
+- id: 08-eulers-identity
+  mode: idea
+  input: "Euler's identity e^{i pi} + 1 = 0 on the unit circle"
+  difficulty: medium
+  domain: math
+  expected_traits: "Unit circle; rotating vector; MathTex final equation"
+
+- id: 09-double-slit-experiment
+  mode: idea
+  input: "Double-slit experiment producing an interference pattern"
+  difficulty: medium
+  domain: physics
+  expected_traits: "Two slits; wave crests; intensity plot"
+
+- id: 10-greenhouse-effect
+  mode: idea
+  input: "How the greenhouse effect warms a planet"
+  difficulty: easy
+  domain: physics
+  expected_traits: "Sun arrows; atmosphere band; outgoing IR blocked"
+
+- id: 11-tcp-three-way-handshake
+  mode: idea
+  input: "TCP three-way handshake: SYN, SYN-ACK, ACK"
+  difficulty: easy
+  domain: cs
+  expected_traits: "Client/server boxes; arrows; sequence labels"
+
+- id: 12-supply-demand-curve
+  mode: idea
+  input: "Supply and demand equilibrium on a price-quantity chart"
+  difficulty: easy
+  domain: finance
+  expected_traits: "Axes; two crossing lines; shaded surplus regions"
+
+# --- math (10) -------------------------------------------------------------
+- id: 13-derivative-as-tangent
+  mode: math
+  input: "Derivative as the slope of the tangent line"
+  difficulty: easy
+  domain: math
+  expected_traits: "Curve; secant collapsing to tangent; MathTex limit"
+
+- id: 14-integral-as-area
+  mode: math
+  input: "Definite integral as area under a curve via Riemann sums"
+  difficulty: medium
+  domain: math
+  expected_traits: "Filled rectangles refining; MathTex sum -> integral"
+
+- id: 15-matrix-vector-transform
+  mode: math
+  input: "How a 2x2 matrix transforms a unit square"
+  difficulty: medium
+  domain: math
+  expected_traits: "Basis vectors i, j; sheared square; MathTex matrix"
+
+- id: 16-eigenvectors-fixed-axis
+  mode: math
+  input: "Eigenvectors as fixed directions under a linear transformation"
+  difficulty: hard
+  domain: math
+  expected_traits: "Vector field; invariant axes highlighted; MathTex Av = lambda v"
+
+- id: 17-taylor-series-approx
+  mode: math
+  input: "Taylor series approximation of sin x at the origin"
+  difficulty: medium
+  domain: math
+  expected_traits: "Curve + truncated polynomials; error shrinking; MathTex"
+
+- id: 18-complex-roots-of-unity
+  mode: math
+  input: "Complex nth roots of unity on the unit circle"
+  difficulty: medium
+  domain: math
+  expected_traits: "Unit circle; n equally spaced dots; MathTex e^{2pi i k/n}"
+
+- id: 19-modular-arithmetic-clock
+  mode: math
+  input: "Modular arithmetic via a clock face"
+  difficulty: easy
+  domain: math
+  expected_traits: "Clock dial; wrapping pointer; MathTex (a + b) mod n"
+
+- id: 20-bezier-curve-control-points
+  mode: math
+  input: "Bezier curves from control points via de Casteljau's algorithm"
+  difficulty: hard
+  domain: math
+  expected_traits: "Control polygon; lerping segments; emergent curve"
+
+- id: 21-newton-method-root
+  mode: math
+  input: "Newton's method finding a root of a polynomial"
+  difficulty: medium
+  domain: math
+  expected_traits: "Curve; tangent intersection with x-axis iterating to root"
+
+- id: 22-pigeonhole-principle
+  mode: math
+  input: "Pigeonhole principle with a birthday example"
+  difficulty: easy
+  domain: math
+  expected_traits: "Boxes (pigeonholes); items overflowing; counts callout"
+
+# --- paper (8) -------------------------------------------------------------
+- id: 23-paper-attention-is-all-you-need
+  mode: paper
+  input: "1706.03762"
+  difficulty: hard
+  domain: cs
+  expected_traits: "Transformer block diagram; QKV attention; multi-head split"
+
+- id: 24-paper-resnet
+  mode: paper
+  input: "1512.03385"
+  difficulty: medium
+  domain: cs
+  expected_traits: "Residual block; identity skip; depth gradient flow"
+
+- id: 25-paper-adam-optimizer
+  mode: paper
+  input: "1412.6980"
+  difficulty: medium
+  domain: cs
+  expected_traits: "Loss surface; momentum + RMSProp combined update"
+
+- id: 26-paper-pagerank
+  mode: paper
+  input: "cs/9809123"
+  difficulty: medium
+  domain: cs
+  expected_traits: "Graph nodes; ranks circulating; damping factor"
+
+- id: 27-paper-bose-einstein-condensate
+  mode: paper
+  input: "cond-mat/9501020"
+  difficulty: hard
+  domain: physics
+  expected_traits: "Velocity distribution collapse to ground state; temperature scale"
+
+- id: 28-paper-shor-factoring
+  mode: paper
+  input: "quant-ph/9508027"
+  difficulty: hard
+  domain: physics
+  expected_traits: "Period-finding subroutine; QFT block; classical post-process"
+
+- id: 29-paper-hodgkin-huxley
+  mode: paper
+  input: "Hodgkin-Huxley action potential model"
+  difficulty: hard
+  domain: bio
+  expected_traits: "Voltage trace; gating variables; ion currents"
+
+- id: 30-paper-black-scholes
+  mode: paper
+  input: "Black-Scholes option pricing intuition"
+  difficulty: hard
+  domain: finance
+  expected_traits: "Stock path; payoff diagram; greeks shading"

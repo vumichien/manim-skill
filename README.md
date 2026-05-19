@@ -189,6 +189,7 @@ See [`docs/storyboard-migration-0.2.0.md`](docs/storyboard-migration-0.2.0.md) f
 | `--quality` | `low\|medium\|high\|4k` | `high` | `high` = 1080p60. |
 | `--storyboard-only` | (flag) | off | Stop after planning; skip render. |
 | `--out` | `<dir>` | `out/<run-id>/` | Override output directory. |
+| `--optimize` | `<corpus.yaml>` | — | Power-user: tune agent prompts via GEPA against your own corpus. See [`docs/gepa-optimization.md`](docs/gepa-optimization.md). |
 
 Full semantics: [`skills/manim-video/references/flag-reference.md`](skills/manim-video/references/flag-reference.md).
 
@@ -346,3 +347,61 @@ PRs welcome. Quick conventions:
 ## License
 
 Apache-2.0. See [`LICENSE`](LICENSE).
+
+---
+
+## Acknowledgements
+
+`manim-skill` stands on the shoulders of several open-source projects:
+
+- **[Manim Community](https://github.com/ManimCommunity/manim)** — the
+  animation engine that turns storyboards into video. Apache-2.0.
+- **[manim-voiceover](https://github.com/ManimCommunity/manim-voiceover)** —
+  gtts / OpenAI / ElevenLabs voiceover integration.
+- **[GEPA](https://github.com/gepa-ai/gepa)** (Agrawal et al., 2025) — the
+  reflective prompt-evolution framework used offline to tune the 4-role
+  agent prompts. MIT.
+- **[DSPy](https://github.com/stanfordnlp/dspy)** — the conceptual ancestor of
+  GEPA and the Stanford NLP work on programmatic LM pipelines.
+- **[Claude Code](https://claude.ai/code)** — the agent runtime that hosts
+  this skill.
+- **arxiv**, **pymupdf4llm**, **trafilatura** — the ingest stack.
+
+## Citation
+
+If `manim-skill` shows up in your paper, blog post, or course, the canonical
+citation is in [`CITATION.cff`](CITATION.cff) (GitHub renders it as a "Cite
+this repository" widget). BibTeX:
+
+```bibtex
+@software{manim_skill_2026,
+  author  = {Vu, Chien},
+  title   = {manim-skill: A 4-role Agent Pipeline for Manim Animations},
+  year    = 2026,
+  version = {0.3.0},
+  url     = {https://github.com/vumichien/manim-skill},
+  license = {Apache-2.0}
+}
+
+@misc{agrawal2025gepa,
+  title         = {GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning},
+  author        = {Lakshya A. Agrawal and Shangyin Tan and Dilara Soylu and Omar Khattab},
+  year          = 2025,
+  eprint        = {2507.19457},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG}
+}
+```
+
+## Disclaimer
+
+This project is provided **AS IS** under the Apache-2.0 license. The author is
+not affiliated with Anthropic, the Manim Community, the GEPA authors, DSPy,
+Stanford NLP, or any other organisation referenced in this README. References
+to those projects exist purely to attribute the open-source dependencies that
+make this plugin possible. Trademarks and product names belong to their
+respective owners.
+
+This is not a Manim Community release, an Anthropic release, or a Stanford NLP
+release. Bugs you find here belong here — open an issue at
+<https://github.com/vumichien/manim-skill/issues> rather than upstream.

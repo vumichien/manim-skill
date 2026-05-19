@@ -1,0 +1,30 @@
+# GEPA valset — hands-off regression guard. Do NOT edit without bumping
+# .valset.sha256 (phase 08 CI gate) and applying the `samples-valset-update`
+# PR label.
+# Each entry points at a canonical sample storyboard and scene file. The
+# regression guard re-renders these against the current agent prompts and
+# fails if any sample no longer produces a valid video.
+
+- id: 01-pythagoras-2d
+  storyboard_path: samples/01-pythagoras-2d/storyboard.yaml
+  scene_path: samples/01-pythagoras-2d/scene.py
+
+- id: 02-rotating-cube-3d
+  storyboard_path: samples/02-rotating-cube-3d/storyboard.yaml
+  scene_path: samples/02-rotating-cube-3d/scene.py
+
+- id: 03-fourier-math
+  storyboard_path: samples/03-fourier-math/storyboard.yaml
+  scene_path: samples/03-fourier-math/scene.py
+
+- id: 04-quadratic-plot
+  storyboard_path: samples/04-quadratic-plot/storyboard.yaml
+  scene_path: samples/04-quadratic-plot/scene.py
+
+- id: 05-text-morph
+  storyboard_path: samples/05-text-morph/storyboard.yaml
+  scene_path: samples/05-text-morph/scene.py
+
+- id: 06-sine-wave-tracker
+  storyboard_path: samples/06-sine-wave-tracker/storyboard.yaml
+  scene_path: samples/06-sine-wave-tracker/scene.py

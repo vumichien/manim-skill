@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+title: "manim-skill"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - given-names: "Chien"
+    family-names: "Vu"
+    alias: "vumichien"
+repository-code: "https://github.com/vumichien/manim-skill"
+url: "https://github.com/vumichien/manim-skill"
+abstract: >
+  Claude Code plugin that turns ideas, papers, and math topics into Manim
+  animations via a 4-role agent pipeline (researcher + planner + implementer
+  + main). Agent prompts are tuned offline with GEPA against schema/render/
+  MathTex/regression metrics.
+keywords:
+  - manim
+  - animation
+  - claude-code
+  - agent
+  - prompt-optimization
+  - gepa
+  - education
+  - research-visualization
+license: "Apache-2.0"
+version: "0.3.0"
+date-released: "2026-05-19"
+references:
+  - type: software
+    title: "GEPA: Reflective Prompt Evolution"
+    authors:
+      - family-names: "Agrawal"
+        given-names: "Lakshya A."
+      - family-names: "Tan"
+        given-names: "Shangyin"
+      - family-names: "Soylu"
+        given-names: "Dilara"
+      - family-names: "Khattab"
+        given-names: "Omar"
+    repository-code: "https://github.com/gepa-ai/gepa"
+    license: "MIT"
+  - type: article
+    title: "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning"
+    authors:
+      - family-names: "Agrawal"
+        given-names: "Lakshya A."
+      - family-names: "Tan"
+        given-names: "Shangyin"
+      - family-names: "Soylu"
+        given-names: "Dilara"
+      - family-names: "Khattab"
+        given-names: "Omar"
+    year: 2025
+    identifiers:
+      - type: other
+        value: "arXiv:2507.19457"

@@ -136,3 +136,19 @@ Override the default `out/<run-id>/`. Skill still creates a `<run-id>` subdir in
 | Storyboard validation fails twice | Stop before render; summary.md flags failure |
 | Render fails after retry budget | Keep successful scenes; summary.md flags incomplete |
 | `xfade` filter unavailable | concat-xfade falls back to plain concat (hard cuts); warn in summary.md |
+
+## `--optimize <corpus.yaml>` (power-user, since 0.3.0)
+
+Off the rendering hot-path. The flag delegates to
+`scripts/optimize-prompts.py` and:
+
+- Reads `<corpus.yaml>` as the GEPA trainset (same shape as
+  `tests/gepa/trainset.yaml`).
+- Re-runs GEPA on top of `agents/_baseline/` and writes optimized prompts to
+  the per-user override dir (see `scripts/agents_override_path.py`).
+- Skips rendering — this run produces prompts, not videos. Run the slash
+  command again (without `--optimize`) to use the optimized prompts.
+
+Requires `pip install -e ".[dev]"` and an OpenAI-family reflection-LM key
+(default `OPENAI_API_KEY`). See `docs/gepa-optimization.md` for cost and
+review workflow.
