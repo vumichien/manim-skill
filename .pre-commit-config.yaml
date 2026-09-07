@@ -8,7 +8,7 @@ ci:
 
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v5.0.0
+    rev: v6.0.0
     hooks:
       - id: trailing-whitespace
         exclude: '\.(svg|gif|png|mp4)$'
@@ -23,7 +23,7 @@ repos:
         args: [--maxkb=2048]
 
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.6.9
+    rev: v0.16.6
     hooks:
       - id: ruff
         args: [--fix]
