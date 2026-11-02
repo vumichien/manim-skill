@@ -46,6 +46,7 @@ def _patch_gepa_logger_for_utf8() -> None:
     """
     try:
         import io
+
         from gepa.logging import logger as gepa_logger
     except ImportError:
         return
@@ -64,7 +65,7 @@ def _patch_gepa_logger_for_utf8() -> None:
                 target = filename if attr == "file_handle" else filename.replace(
                     "run_log.", "run_log_stderr."
                 )
-                setattr(self, attr, io.open(target, mode, encoding="utf-8", errors="replace"))
+                setattr(self, attr, open(target, mode, encoding="utf-8", errors="replace"))
 
     gepa_logger.Logger.__init__ = _utf8_init  # type: ignore[assignment]
 

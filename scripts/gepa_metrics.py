@@ -16,8 +16,8 @@ drops. v2 metrics (e.g. visual quality) plug in via `add_metric`.
 """
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Callable
 
 WEIGHTS: dict[str, float] = {
     "schema": 0.4,
