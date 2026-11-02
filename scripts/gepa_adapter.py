@@ -23,10 +23,11 @@ from __future__ import annotations
 import shutil
 import subprocess
 import sys
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from statistics import stdev
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from gepa_metrics import PipelineTrace, composite_score, pareto_vector  # noqa: E402
